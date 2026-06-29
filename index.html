@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yasin Namani • Windows 11</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;500;600&amp;display=swap');
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        
+        .desktop {
+            background: linear-gradient(145deg, #0f172a 0%, #1e3a8a 35%, #312e81 65%, #1e40af 100%);
+        }
+        
+        .window {
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
+            animation: windowOpen 0.15s cubic-bezier(0.32, 0.72, 0, 1);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #64748b25;
+        }
+        
+        .title-bar {
+            background: linear-gradient(to bottom, #f8fafc, #f1e7ff);
+        }
+        
+        .desktop-icon {
+            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .desktop-icon:hover {
+            transform: scale(1.06);
+            background-color: rgba(255,255,255,0.12);
+        }
+        
+        .icon-bg {
+            width: 54px;
+            height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px -4px rgb(0 0 0 / 0.25);
+        }
+        
+        .taskbar {
+            background: rgba(15, 23, 42, 0.96);
+            backdrop-filter: blur(30px);
+        }
+        
+        .start-menu {
+            animation: startPop 0.2s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+        
+        .win11-btn:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+        
+        .win11-btn.close:hover {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        /* Responsive for mobile */
+        @media (max-width: 768px) {
+            .desktop-icon {
+                width: 68px !important;
+            }
+            .icon-bg {
+                width: 46px !important;
+                height: 46px !important;
+            }
+            .desktop-icon span {
+                font-size: 9px !important;
+            }
+            .taskbar {
+                height: 46px !important;
+            }
+            .window {
+                border-radius: 8px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .desktop {
+                background: #1e3a8a;
+            }
+        }
+    </style>
+</head>
+<body class="overflow-hidden bg-zinc-950">
+    <!-- DESKTOP -->
+    <div id="desktop" class="desktop w-screen h-screen relative select-none"
+         oncontextmenu="showContextMenu(event); return false;"
+         onclick="handleDesktopClick(event)">
+        
+        <!-- Desktop Icons - 2 Columns -->
+        <div class="absolute top-5 left-5 grid grid-cols-2 gap-x-5 gap-y-5 z-10">
+            
+            <!-- Personal Projects -->
+            <div onclick="openProject('yasin', 'https://yasin-namani.github.io/yasin-namani.com/')" class="desktop-icon group w-[82px] flex flex-col items-center p-2 rounded-3xl cursor-pointer">
+                <div class="icon-bg bg-gradient-to-br from-violet-500 via-purple-500 to-indigo-600">
+                    <i class="fas fa-user text-white text-[27px]"></i>
+                </div>
+                <span class="text-white text-[10px] mt-1.5 text-center font-medium tracking-tight leading-tight">یاسین نامنی</span>
+            </div>
+            
+            <div onclick="openProject('prank', 'https://shetwarp.github.io/we-are-friend-/')" class="desktop-icon group w-[82px] flex flex-col items-center p-2 rounded-3xl cursor-pointer">
+                <div class="icon-bg bg-gradient-to-br from-pink-500 to-rose-500">
+                    <i class="fas fa-grin-tongue-wink text-white text-[27px]"></i>
+                </div>
+                <span class="text-white text-[10px] mt-1.5 text-center font-medium tracking-tight leading-tight">Prank</span>
+            </div>
+            
+            <div onclick="openProject('counter', 'https://shetwarp.github.io/Shetline/')" class="desktop-icon group w-[82px] flex flex-col items-center p-2 rounded-3xl cursor-pointer">
+                <div class="icon-bg bg-gradient-to-br from-red-500 to-orange-600">
+                    <i class="fas fa-crosshairs text-white text-[27px]"></i>
+                </div>
+                <span class="text-white text-[10px] mt-1.5 text-center font-medium tracking-tight leading-tight">کانتر استرایک</span>
+            </div>
+            
+            <div onclick="openProject('robot', 'https://yasin-namani.github.io/pica.pat/')" class="desktop-icon group w-[82px] flex flex-col items-center p-2 rounded-3xl cursor-pointer">
+                <div class="icon-bg bg-gradient-to-br from-emerald-400 to-teal-600">
+                    <i class="fas fa-robot text-white text-[27px]"></i>
+                </div>
+                <span class="text-white text-[10px] mt-1.5 text-center font-medium tracking-tight leading-tight">ربات هوشمند</span>
+            </div>
+            
+            <div onclick="openProject('bluecode', 'https://shetwarp.github.io/bluecode/')" class="desktop-icon group w-[82px] flex flex-col items-center p-2 rounded-3xl cursor-pointer">
+                <div class="icon-bg bg-gradient-to-br from-blue-500 to-cyan-500">
+                    <i class="fas fa-code text-white text-[27px]"></i>
+                </div>
+                <span class="text-white text-[10px] mt-1.5 text-center font-medium tracking-tight leading-tight">آموزش برنامه‌نویسی</span>
+            </div>
+            
+            <div onclick="openProject('minecraftweb', 'https://shetwarp.github.io/minecraftweb/')" class="desktop-icon group w-[82px] flex flex-col items-center p-2 rounded-3xl cursor-pointer">
+                <div class="icon-bg bg-gradient-to-br from-green-500 to-cyan-500">
+                    <i class="fas fa-code text-white text-[27px]"></i>
+                </div>
+                <span class="text-white text-[10px] mt-1.5 text-center font-medium tracking-tight leading-tight">ماینکرافت</span>
+            </div>
+
+
+            <!-- Standard Apps -->
+            <div onclick="openWindow('explorer')" class="desktop-icon group w-[82px] flex flex-col items-center p-2 rounded-3xl cursor-pointer">
+                <div class="icon-bg bg-gradient-to-br from-sky-400 to-blue-600">
+                    <i class="fas fa-folder text-white text-[26px]"></i>
+                </div>
+                <span class="text-white text-[10px] mt-1.5 text-center font-medium tracking-tight">This PC</span>
+            </div>
+            
+            <div onclick="openWindow('recycle')" class="desktop-icon group w-[82px] flex flex-col items-center p-2 rounded-3xl cursor-pointer">
+                <div class="icon-bg bg-gradient-to-br from-zinc-400 to-zinc-600">
+                    <i class="fas fa-trash text-white text-[26px]"></i>
+                </div>
+                <span class="text-white text-[10px] mt-1.5 text-center font-medium tracking-tight">Recycle Bin</span>
+            </div>
+            
+            <div onclick="openWindow('chrome')" class="desktop-icon group w-[82px] flex flex-col items-center p-2 rounded-3xl cursor-pointer">
+                <div class="icon-bg bg-gradient-to-br from-sky-400 to-blue-500">
+                    <i class="fas fa-globe text-white text-[26px]"></i>
+                </div>
+                <span class="text-white text-[10px] mt-1.5 text-center font-medium tracking-tight">Chrome</span>
+            </div>
+            
+            <div onclick="openWindow('calculator')" class="desktop-icon group w-[82px] flex flex-col items-center p-2 rounded-3xl cursor-pointer">
+                <div class="icon-bg bg-gradient-to-br from-emerald-400 to-teal-500">
+                    <i class="fas fa-calculator text-white text-[26px]"></i>
+                </div>
+                <span class="text-white text-[10px] mt-1.5 text-center font-medium tracking-tight">Calculator</span>
+            </div>
+            
+            <div onclick="openWindow('paint')" class="desktop-icon group w-[82px] flex flex-col items-center p-2 rounded-3xl cursor-pointer">
+                <div class="icon-bg bg-gradient-to-br from-pink-400 to-rose-500">
+                    <i class="fas fa-paint-brush text-white text-[26px]"></i>
+                </div>
+                <span class="text-white text-[10px] mt-1.5 text-center font-medium tracking-tight">Paint</span>
+            </div>
+            
+            <div onclick="openWindow('terminal')" class="desktop-icon group w-[82px] flex flex-col items-center p-2 rounded-3xl cursor-pointer">
+                <div class="icon-bg bg-gradient-to-br from-zinc-700 to-black">
+                    <i class="fas fa-terminal text-white text-[26px]"></i>
+                </div>
+                <span class="text-white text-[10px] mt-1.5 text-center font-medium tracking-tight">Terminal</span>
+            </div>
+            
+        </div>
+
+
+
+
+        
+        <div id="window-container" class="absolute inset-0 z-20 pointer-events-none"></div>
+    </div>
+
+    <!-- TASKBAR -->
+    <div class="taskbar fixed bottom-0 left-0 right-0 h-[52px] border-t border-zinc-700 flex items-center px-2 z-[60] text-white text-sm">
+        <div class="flex items-center h-full flex-1">
+            
+            <!-- Start Button -->
+            <button onclick="toggleStartMenu(event)"
+                    class="h-9 px-3 mx-1 flex items-center gap-2 hover:bg-white/10 active:bg-white/20 rounded-2xl transition-all active:scale-[0.92]">
+                <!-- Windows Logo (reliable CSS version) -->
+                <div class="w-[18px] h-[18px] grid grid-cols-2 gap-[1.5px]">
+                    <div class="bg-[#f25022] rounded-sm"></div>
+                    <div class="bg-[#7fba00] rounded-sm"></div>
+                    <div class="bg-[#00a4ef] rounded-sm"></div>
+                    <div class="bg-[#ffb900] rounded-sm"></div>
+                </div>
+            </button>
+            
+            <div onclick="showSearchFake()" class="hidden md:flex items-center bg-white/10 hover:bg-white/15 transition px-4 h-8 w-72 rounded-3xl text-zinc-300 text-xs cursor-pointer mx-1.5">
+                <i class="fas fa-search mr-2.5 text-xs"></i>
+                <span>Search</span>
+            </div>
+            
+            <div class="flex items-center gap-px ml-1">
+                <div onclick="openWindow('explorer')" class="h-8 w-8 flex items-center justify-center hover:bg-white/10 active:bg-white/20 rounded-2xl cursor-pointer transition"><i class="fas fa-folder text-sky-300"></i></div>
+                <div onclick="openWindow('chrome')" class="h-8 w-8 flex items-center justify-center hover:bg-white/10 active:bg-white/20 rounded-2xl cursor-pointer transition"><i class="fas fa-globe text-sky-300"></i></div>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-x-1 pr-3 text-xs cursor-pointer" onclick="toggleTrayPanel()">
+            <div class="flex items-center gap-x-2 text-zinc-300 px-2 py-1 hover:bg-white/10 rounded-2xl transition" id="tray-icons">
+                <i class="fas fa-wifi" id="wifi-icon" onclick="event.stopImmediatePropagation(); toggleWifi();"></i>
+                <i class="fas fa-volume-up" onclick="event.stopImmediatePropagation(); toggleTrayPanel();"></i>
+                <i class="fas fa-battery-full"></i>
+            </div>
+            <div id="clock" onclick="event.stopImmediatePropagation(); toggleTrayPanel()" class="font-mono text-xs px-3 py-1 hover:bg-white/10 rounded-2xl cursor-pointer transition tracking-tighter"></div>
+            
+            <!-- Fullscreen Button -->
+            <button onclick="toggleFullscreen()" class="ml-2 px-2 py-1 text-xs hover:bg-white/10 rounded-xl flex items-center gap-1 transition">
+                <i class="fas fa-expand text-sm"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- START MENU -->
+    <div id="start-menu" class="hidden fixed bottom-[58px] left-3 w-[360px] bg-zinc-900/95 backdrop-blur-2xl border border-zinc-700 rounded-3xl shadow-2xl z-[70] flex flex-col overflow-hidden start-menu">
+        <div class="p-5">
+            <div class="flex items-center gap-3 mb-5">
+                <div class="w-10 h-10 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-inner">
+                    <i class="fas fa-user text-white text-2xl"></i>
+                </div>
+                <div>
+                    <div class="font-semibold text-lg">Yasin Namani</div>
+                    <div class="text-xs text-zinc-400">yasin.namani.dev</div>
+                </div>
+            </div>
+            
+            <div class="mb-2">
+                <div class="text-xs font-medium text-zinc-400 px-1 mb-2">My Projects</div>
+                <div class="grid grid-cols-3 gap-2 text-xs">
+                    <div onclick="openProjectFromStart('yasin', 'https://yasin-namani.github.io/yasin-namani.com/')" class="flex flex-col items-center p-2 hover:bg-white/10 rounded-2xl cursor-pointer">
+                        <i class="fas fa-user text-xl text-violet-400 mb-1"></i>
+                        <span class="text-center">یاسین نامنی</span>
+                    </div>
+                    <div onclick="openProjectFromStart('prank', 'https://shetwarp.github.io/we-are-friend-/')" class="flex flex-col items-center p-2 hover:bg-white/10 rounded-2xl cursor-pointer">
+                        <i class="fas fa-grin-tongue-wink text-xl text-pink-400 mb-1"></i>
+                        <span class="text-center">Prank</span>
+                    </div>
+                    <div onclick="openProjectFromStart('counter', 'https://shetwarp.github.io/Shetline/')" class="flex flex-col items-center p-2 hover:bg-white/10 rounded-2xl cursor-pointer">
+                        <i class="fas fa-crosshairs text-xl text-red-400 mb-1"></i>
+                        <span class="text-center">کانتر استرایک</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-auto border-t border-zinc-700 p-3 bg-zinc-950/60 flex items-center justify-between text-xs">
+            <div onclick="shutdownFake()" class="flex items-center gap-2 px-3 py-1 hover:bg-white/10 rounded-2xl cursor-pointer text-red-300 hover:text-red-400 transition">
+                <i class="fas fa-power-off"></i>
+                <span class="font-medium">Power</span>
+            </div>
+            <div class="text-[10px] text-zinc-500 pr-2">Windows 11</div>
+        </div>
+    </div>
+
+    <!-- CONTEXT MENU -->
+    <div id="context-menu" class="hidden absolute bg-zinc-800 border border-zinc-600 rounded-2xl shadow-2xl py-1.5 text-sm z-[80] w-52">
+        <div onclick="hideContextMenu(); location.reload()" class="px-4 py-[7px] hover:bg-white/10 cursor-pointer flex items-center gap-3 mx-1 rounded-xl">
+            <i class="fas fa-sync-alt w-4"></i> <span>Refresh</span>
+        </div>
+        <div class="h-px bg-zinc-700 my-1 mx-2"></div>
+        <div onclick="hideContextMenu()" class="px-4 py-[7px] hover:bg-white/10 cursor-pointer flex items-center gap-3 mx-1 rounded-xl">View</div>
+        <div onclick="hideContextMenu()" class="px-4 py-[7px] hover:bg-white/10 cursor-pointer flex items-center gap-3 mx-1 rounded-xl">Sort by</div>
+        <div class="h-px bg-zinc-700 my-1 mx-2"></div>
+        <div onclick="hideContextMenu(); createNewFolderFake()" class="px-4 py-[7px] hover:bg-white/10 cursor-pointer flex items-center gap-3 mx-1 rounded-xl">
+            <i class="fas fa-folder-plus w-4"></i> <span>New folder</span>
+        </div>
+    </div>
+
+    <!-- TRAY PANEL -->
+    <div id="tray-panel" class="hidden fixed bottom-[58px] right-3 w-[360px] bg-zinc-900/95 backdrop-blur-2xl border border-zinc-700 rounded-3xl shadow-2xl z-[75]">
+        <div class="p-5">
+            <div class="flex justify-between mb-4">
+                <span class="font-semibold">Quick settings</span>
+                <button onclick="toggleTrayPanel()" class="text-zinc-400"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div onclick="toggleWifi()" class="flex items-center gap-3 p-3 bg-zinc-800 hover:bg-zinc-700 rounded-2xl cursor-pointer">
+                    <div class="w-9 h-9 bg-sky-500 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-wifi text-white" id="panel-wifi-icon"></i>
+                    </div>
+                    <div>
+                        <div class="font-medium text-sm">Wi-Fi</div>
+                        <div class="text-xs text-emerald-400" id="wifi-status">Connected</div>
+                    </div>
+                </div>
+                <div onclick="toggleBluetooth(this)" class="flex items-center gap-3 p-3 bg-zinc-800 hover:bg-zinc-700 rounded-2xl cursor-pointer">
+                    <div class="w-9 h-9 bg-blue-500 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-bluetooth-b text-white"></i>
+                    </div>
+                    <div>
+                        <div class="font-medium text-sm">Bluetooth</div>
+                        <div class="text-xs text-emerald-400">On</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <div class="flex justify-between text-xs mb-1 px-1"><span>Volume</span><span id="volume-value">70%</span></div>
+                    <input type="range" id="volume-slider" min="0" max="100" value="70" class="w-full accent-sky-500" oninput="updateVolume(this)">
+                </div>
+                <div>
+                    <div class="flex justify-between text-xs mb-1 px-1"><span>Brightness</span><span id="brightness-value">85%</span></div>
+                    <input type="range" id="brightness-slider" min="30" max="100" value="85" class="w-full accent-yellow-500" oninput="updateBrightness(this)">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let windowCounter = 0;
+        let isDragging = false;
+        let currentDragWin = null;
+        let offsetX = 0, offsetY = 0;
+        let startMenuOpen = false;
+        let wifiOn = true;
+        
+        const PROJECTS = {
+            yasin: "https://yasin-namani.github.io/yasin-namani.com/",
+            prank: "https://shetwarp.github.io/we-are-friend-/",
+            counter: "https://shetwarp.github.io/Shetline/",
+            robot: "https://yasin-namani.github.io/pica.pat/",
+            bluecode: "https://shetwarp.github.io/bluecode/"
+        };
+        
+        function updateClock() {
+            const clock = document.getElementById('clock');
+            function tick() {
+                const now = new Date();
+                clock.textContent = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+            }
+            tick();
+            setInterval(tick, 30000);
+        }
+        
+        function handleDesktopClick(e) {
+            const start = document.getElementById('start-menu');
+            const tray = document.getElementById('tray-panel');
+            const ctx = document.getElementById('context-menu');
+            
+            if (!start.contains(e.target)) {
+                start.classList.add('hidden');
+                start.classList.remove('flex');
+                startMenuOpen = false;
+            }
+            if (!tray.contains(e.target) && !e.target.closest('#tray-icons') && !e.target.closest('#clock')) {
+                tray.classList.add('hidden');
+            }
+            if (!ctx.contains(e.target)) ctx.classList.add('hidden');
+        }
+        
+        function showContextMenu(e) {
+            e.preventDefault();
+            const ctx = document.getElementById('context-menu');
+            ctx.style.left = e.pageX + 'px';
+            ctx.style.top = e.pageY + 'px';
+            ctx.classList.remove('hidden');
+        }
+        
+        function hideContextMenu() {
+            document.getElementById('context-menu').classList.add('hidden');
+        }
+        
+        function createNewFolderFake() {
+            hideContextMenu();
+            alert('New folder created! (Demo version)');
+        }
+        
+        function toggleStartMenu(e) {
+            e.stopImmediatePropagation();
+            const menu = document.getElementById('start-menu');
+            if (startMenuOpen) {
+                menu.classList.add('hidden');
+                menu.classList.remove('flex');
+                startMenuOpen = false;
+            } else {
+                menu.classList.remove('hidden');
+                menu.classList.add('flex');
+                startMenuOpen = true;
+            }
+        }
+        
+        function openProjectFromStart(key, url) {
+            document.getElementById('start-menu').classList.add('hidden');
+            document.getElementById('start-menu').classList.remove('flex');
+            startMenuOpen = false;
+            openProject(key, url);
+        }
+        
+        function openProject(key, url) {
+            window.open(url, '_blank');
+            
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-20 left-1/2 -translate-x-1/2 bg-zinc-900 border border-zinc-700 text-white px-5 py-3 rounded-2xl text-sm flex items-center gap-3 z-[90] shadow-xl';
+            toast.innerHTML = `
+                <i class="fas fa-external-link-alt text-sky-400"></i>
+                <span>Opening <strong>${key}</strong>...</span>
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.transition = 'all 0.3s';
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 200);
+            }, 1500);
+        }
+        
+        function toggleTrayPanel() {
+            const panel = document.getElementById('tray-panel');
+            panel.classList.toggle('hidden');
+            
+            const panelWifi = document.getElementById('panel-wifi-icon');
+            if (panelWifi) panelWifi.className = wifiOn ? 'fas fa-wifi text-white' : 'fas fa-wifi text-zinc-400';
+        }
+        
+        function toggleWifi() {
+            wifiOn = !wifiOn;
+            const icon = document.getElementById('wifi-icon');
+            const panelIcon = document.getElementById('panel-wifi-icon');
+            const status = document.getElementById('wifi-status');
+            
+            if (wifiOn) {
+                icon.className = 'fas fa-wifi';
+                if (panelIcon) panelIcon.className = 'fas fa-wifi text-white';
+                if (status) { status.textContent = 'Connected'; status.className = 'text-xs text-emerald-400'; }
+            } else {
+                icon.className = 'fas fa-wifi text-zinc-500';
+                if (panelIcon) panelIcon.className = 'fas fa-wifi text-zinc-400';
+                if (status) { status.textContent = 'Off'; status.className = 'text-xs text-zinc-400'; }
+            }
+        }
+        
+        function toggleBluetooth(el) {
+            el.style.opacity = (el.style.opacity === '0.5') ? '1' : '0.5';
+        }
+        
+        function updateVolume(slider) {
+            document.getElementById('volume-value').textContent = slider.value + '%';
+        }
+        
+        function updateBrightness(slider) {
+            document.getElementById('brightness-value').textContent = slider.value + '%';
+            const desktop = document.getElementById('desktop');
+            desktop.style.filter = `brightness(${slider.value / 100})`;
+        }
+        
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+        
+        function openWindow(type) {
+            windowCounter++;
+            const container = document.getElementById('window-container');
+            const win = document.createElement('div');
+            win.id = `win-${windowCounter}`;
+            win.className = `window absolute bg-white flex flex-col pointer-events-auto shadow-2xl`;
+            
+            let w = 740, h = 520, left = 130 + (windowCounter % 6) * 28, top = 65 + (windowCounter % 4) * 24;
+            
+            if (type === 'chrome') { w = 980; h = 640; }
+            else if (type === 'calculator') { w = 320; h = 460; }
+            else if (type === 'paint') { w = 780; h = 560; }
+            else if (type === 'terminal') { w = 680; h = 420; }
+            
+            win.style.left = left + 'px';
+            win.style.top = top + 'px';
+            win.style.width = w + 'px';
+            win.style.height = h + 'px';
+            win.style.zIndex = 160 + windowCounter;
+            
+            let title = '', icon = '', contentHTML = '';
+            
+            if (type === 'explorer') {
+                title = 'File Explorer';
+                icon = '<i class="fas fa-folder text-sky-500"></i>';
+                contentHTML = `
+                    <div class="p-5">
+                        <div class="font-semibold mb-3">My Projects</div>
+                        <div class="space-y-1 text-sm">
+                            <div onclick="openProject('yasin', '${PROJECTS.yasin}')" class="flex items-center gap-3 p-3 hover:bg-zinc-100 rounded-2xl cursor-pointer"><i class="fas fa-user text-violet-500"></i> یاسین نامنی</div>
+                            <div onclick="openProject('prank', '${PROJECTS.prank}')" class="flex items-center gap-3 p-3 hover:bg-zinc-100 rounded-2xl cursor-pointer"><i class="fas fa-grin-tongue-wink text-pink-500"></i> Prank</div>
+                            <div onclick="openProject('counter', '${PROJECTS.counter}')" class="flex items-center gap-3 p-3 hover:bg-zinc-100 rounded-2xl cursor-pointer"><i class="fas fa-crosshairs text-red-500"></i> کانتر استرایک</div>
+                            <div onclick="openProject('robot', '${PROJECTS.robot}')" class="flex items-center gap-3 p-3 hover:bg-zinc-100 rounded-2xl cursor-pointer"><i class="fas fa-robot text-emerald-500"></i> ربات هوشمند</div>
+                            <div onclick="openProject('bluecode', '${PROJECTS.bluecode}')" class="flex items-center gap-3 p-3 hover:bg-zinc-100 rounded-2xl cursor-pointer"><i class="fas fa-code text-blue-500"></i> آموزش برنامه‌نویسی</div>
+                        </div>
+                    </div>
+                `;
+            } 
+            else if (type === 'recycle') {
+                title = 'Recycle Bin';
+                icon = '<i class="fas fa-trash text-zinc-400"></i>';
+                contentHTML = `
+                    <div class="p-5">
+                        <div class="flex justify-between mb-4">
+                            <span class="font-semibold">8 items deleted</span>
+                            <button onclick="emptyRecycle(this)" class="text-xs px-4 py-1.5 bg-red-500 text-white rounded-2xl">Empty Recycle Bin</button>
+                        </div>
+                        <div class="text-sm border rounded-2xl overflow-hidden">
+                            <div class="px-4 py-2 bg-zinc-50 text-xs flex"><div class="flex-1">Name</div><div class="w-28">Date deleted</div></div>
+                            <div class="divide-y text-sm px-4">
+                                <div class="py-2 flex"><div class="flex-1">Q4_Report.pdf</div><div class="w-28 text-xs text-zinc-500">Jan 12</div></div>
+                                <div class="py-2 flex"><div class="flex-1">Vacation_Photos.zip</div><div class="w-28 text-xs text-zinc-500">Dec 28</div></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } 
+            else if (type === 'chrome') {
+                title = 'Google Chrome';
+                icon = '<i class="fas fa-globe text-sky-500"></i>';
+                contentHTML = `
+                    <div class="flex flex-col h-full">
+                        <div class="px-3 py-2 bg-zinc-100 flex items-center gap-2 border-b">
+                            <input type="text" value="https://www.google.com" class="flex-1 bg-white px-4 py-1 rounded-3xl text-sm outline-none" onkeydown="if(event.key==='Enter') handleChromeSearch('${win.id}', this.value)">
+                        </div>
+                        <div id="chrome-content-${windowCounter}" class="flex-1 p-8 bg-white overflow-auto">
+                            <div class="max-w-md mx-auto mt-6 text-center">
+                                <div class="text-7xl font-bold tracking-tighter bg-gradient-to-br from-blue-600 to-sky-400 bg-clip-text text-transparent mb-6">Google</div>
+                                <input type="text" placeholder="Search Google or type a URL" class="w-full border px-5 py-3 rounded-3xl text-sm mb-4 outline-none" onkeydown="if(event.key==='Enter') handleGoogleSearch('${win.id}', this.value)">
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } 
+            else if (type === 'notepad') {
+                title = 'Notepad';
+                icon = '<i class="fas fa-file-lines text-amber-500"></i>';
+                contentHTML = `<div class="flex flex-col h-full"><div class="px-4 py-1 bg-zinc-100 text-xs border-b">File &nbsp; Edit &nbsp; Format</div><textarea class="flex-1 p-5 font-mono text-sm resize-none outline-none" placeholder="Write something..."></textarea></div>`;
+            } 
+            else if (type === 'calculator') {
+                title = 'Calculator';
+                icon = '<i class="fas fa-calculator text-emerald-500"></i>';
+                contentHTML = `
+                    <div class="p-4 bg-zinc-900 text-white h-full flex flex-col">
+                        <div id="calc-display" class="bg-zinc-800 h-14 rounded-2xl flex items-end justify-end px-5 text-3xl font-light mb-4">0</div>
+                        <div class="grid grid-cols-4 gap-2 flex-1 text-xl">
+                            <button onclick="calcInput('C')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">C</button>
+                            <button onclick="calcInput('±')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">±</button>
+                            <button onclick="calcInput('%')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">%</button>
+                            <button onclick="calcInput('/')" class="calculator-btn bg-orange-500 hover:bg-orange-600 rounded-2xl">÷</button>
+                            
+                            <button onclick="calcInput('7')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">7</button>
+                            <button onclick="calcInput('8')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">8</button>
+                            <button onclick="calcInput('9')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">9</button>
+                            <button onclick="calcInput('*')" class="calculator-btn bg-orange-500 hover:bg-orange-600 rounded-2xl">×</button>
+                            
+                            <button onclick="calcInput('4')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">4</button>
+                            <button onclick="calcInput('5')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">5</button>
+                            <button onclick="calcInput('6')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">6</button>
+                            <button onclick="calcInput('-')" class="calculator-btn bg-orange-500 hover:bg-orange-600 rounded-2xl">−</button>
+                            
+                            <button onclick="calcInput('1')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">1</button>
+                            <button onclick="calcInput('2')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">2</button>
+                            <button onclick="calcInput('3')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">3</button>
+                            <button onclick="calcInput('+')" class="calculator-btn bg-orange-500 hover:bg-orange-600 rounded-2xl">+</button>
+                            
+                            <button onclick="calcInput('0')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl col-span-2">0</button>
+                            <button onclick="calcInput('.')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">.</button>
+                            <button onclick="calcInput('=')" class="calculator-btn bg-orange-500 hover:bg-orange-600 rounded-2xl">=</button>
+                        </div>
+                    </div>
+                `;
+            } 
+            else if (type === 'paint') {
+                title = 'Paint';
+                icon = '<i class="fas fa-paint-brush text-pink-500"></i>';
+                contentHTML = `
+                    <div class="flex flex-col h-full">
+                        <div class="px-4 py-2 bg-zinc-100 flex gap-3 text-sm border-b">
+                            <button onclick="paintClear()" class="px-3 py-1 bg-white rounded-xl text-xs border">Clear</button>
+                            <button onclick="paintSave()" class="px-3 py-1 bg-white rounded-xl text-xs border">Save</button>
+                            <input type="color" id="paint-color-${windowCounter}" value="#000000">
+                            <input type="range" id="paint-size-${windowCounter}" min="2" max="30" value="5" class="accent-pink-500 w-20">
+                        </div>
+                        <div class="flex-1 p-3 bg-zinc-50">
+                            <canvas id="paint-canvas-${windowCounter}" width="720" height="420" class="paint-canvas border shadow-inner"></canvas>
+                        </div>
+                    </div>
+                `;
+            } 
+            else if (type === 'terminal') {
+                title = 'Terminal';
+                icon = '<i class="fas fa-terminal text-emerald-400"></i>';
+                contentHTML = `
+                    <div class="flex flex-col h-full bg-black text-emerald-400 font-mono text-sm">
+                        <div class="px-4 py-1 bg-zinc-900 text-xs border-b border-zinc-800">PowerShell</div>
+                        <div id="terminal-output-${windowCounter}" class="flex-1 p-4 overflow-auto text-xs">PS C:\\Users\\Yasin&gt; </div>
+                        <div class="flex px-4 py-2 border-t border-zinc-800">
+                            <span>PS C:\\Users\\Yasin&gt;</span>
+                            <input type="text" id="terminal-input-${windowCounter}" class="flex-1 bg-transparent outline-none ml-2" onkeydown="if(event.key==='Enter') runTerminalCommand('${win.id}', this)">
+                        </div>
+                    </div>
+                `;
+            }
+            
+            win.innerHTML = `
+                <div class="title-bar flex items-center justify-between px-3 h-11 cursor-move select-none" onmousedown="startDrag(event, '${win.id}')">
+                    <div class="flex items-center gap-2.5 pl-2">
+                        <span class="text-xl">${icon}</span>
+                        <span class="font-semibold text-sm">${title}</span>
+                    </div>
+                    <div class="flex">
+                        <button onclick="event.stopImmediatePropagation(); minimizeWindow('${win.id}')" class="win11-btn w-9 h-8 flex items-center justify-center text-xl text-zinc-500 hover:text-zinc-700 rounded-2xl">−</button>
+                        <button onclick="event.stopImmediatePropagation(); maximizeWindow('${win.id}')" class="win11-btn w-9 h-8 flex items-center justify-center text-sm text-zinc-500 hover:text-zinc-700 rounded-2xl">□</button>
+                        <button onclick="event.stopImmediatePropagation(); closeWindow('${win.id}')" class="win11-btn close w-9 h-8 flex items-center justify-center text-xl text-zinc-500 hover:text-white rounded-2xl">×</button>
+                    </div>
+                </div>
+                <div class="flex-1 overflow-hidden bg-white text-zinc-800">${contentHTML}</div>
+            `;
+            
+            container.appendChild(win);
+            win.addEventListener('mousedown', () => bringToFront(win));
+            setTimeout(() => bringToFront(win), 10);
+            
+            if (type === 'paint') setTimeout(() => initPaint(win.id), 80);
+            if (type === 'calculator') { win.dataset.calcValue = '0'; win.dataset.calcOperator = ''; }
+            if (type === 'terminal') setTimeout(() => { const inp = document.getElementById('terminal-input-' + windowCounter); if (inp) inp.focus(); }, 100);
+        }
+        
+        function initPaint(winId) {
+            const canvas = document.getElementById('paint-canvas-' + winId.split('-')[1]);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let painting = false;
+            
+            canvas.addEventListener('mousedown', e => { painting = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); });
+            canvas.addEventListener('mouseup', () => painting = false);
+            canvas.addEventListener('mousemove', e => {
+                if (!painting) return;
+                ctx.strokeStyle = document.getElementById('paint-color-' + winId.split('-')[1]).value;
+                ctx.lineWidth = document.getElementById('paint-size-' + winId.split('-')[1]).value;
+                ctx.lineTo(e.offsetX, e.offsetY);
+                ctx.stroke();
+            });
+        }
+        
+        function paintClear() { const c = document.querySelector('.paint-canvas'); if (c) c.getContext('2d').clearRect(0,0,c.width,c.height); }
+        function paintSave() { const c = document.querySelector('.paint-canvas'); if (c) { const a = document.createElement('a'); a.download = 'painting.png'; a.href = c.toDataURL(); a.click(); } }
+        
+        function runTerminalCommand(winId, input) {
+            const out = document.getElementById('terminal-output-' + winId.split('-')[1]);
+            const cmd = input.value.trim().toLowerCase();
+            out.innerHTML += `<div>PS C:\\Users\\Yasin&gt; <span class="text-white">${input.value}</span></div>`;
+            
+            if (cmd === 'help') out.innerHTML += `<div class="text-zinc-400">dir, echo, date, cls, exit</div>`;
+            else if (cmd === 'dir') out.innerHTML += `<div class="text-zinc-400">Desktop &nbsp; Documents &nbsp; Projects</div>`;
+            else if (cmd.startsWith('echo ')) out.innerHTML += `<div class="text-white">${input.value.substring(5)}</div>`;
+            else if (cmd === 'date') out.innerHTML += `<div class="text-zinc-400">${new Date().toLocaleDateString()}</div>`;
+            else if (cmd === 'cls') out.innerHTML = '';
+            else if (cmd === 'exit') closeWindow(winId);
+            else out.innerHTML += `<div class="text-red-400">'${cmd}' is not recognized.</div>`;
+            
+            out.scrollTop = out.scrollHeight;
+            input.value = '';
+        }
+        
+        function calcInput(val) {
+            const wins = document.querySelectorAll('[id^="win-"]');
+            let active = null;
+            for (let w of wins) if (w.querySelector('#calc-display')) { active = w; break; }
+            if (!active) return;
+            
+            const display = active.querySelector('#calc-display');
+            let current = display.textContent;
+            
+            if (val === 'C') { display.textContent = '0'; active.dataset.calcValue = '0'; active.dataset.calcOperator = ''; }
+            else if (val === '=') {
+                if (active.dataset.calcOperator) {
+                    const prev = parseFloat(active.dataset.calcPrevious || '0');
+                    const curr = parseFloat(current);
+                    let res = 0;
+                    if (active.dataset.calcOperator === '+') res = prev + curr;
+                    if (active.dataset.calcOperator === '-') res = prev - curr;
+                    if (active.dataset.calcOperator === '*') res = prev * curr;
+                    if (active.dataset.calcOperator === '/') res = prev / curr;
+                    display.textContent = res;
+                }
+            } else if (['+','-','*','/'].includes(val)) {
+                active.dataset.calcPrevious = current;
+                active.dataset.calcOperator = val;
+                display.textContent = '0';
+            } else {
+                display.textContent = (current === '0' ? val : current + val);
+            }
+        }
+        
+        function emptyRecycle(btn) {
+            btn.closest('.p-5').innerHTML = `<div class="p-8 text-center"><i class="fas fa-trash text-6xl text-zinc-300 mb-4"></i><div class="font-semibold">Recycle Bin is empty</div></div>`;
+        }
+        
+        function handleGoogleSearch(winId, query) {
+            const content = document.getElementById('chrome-content-' + winId.split('-')[1]);
+            if (!content) return;
+            
+            let html = `<div class="max-w-2xl mx-auto"><div class="mb-4 text-sm">Results for <strong>"${query}"</strong></div>`;
+            
+            if (query.includes('یاسین') || query.toLowerCase().includes('yasin')) html += `<div onclick="window.open('${PROJECTS.yasin}','_blank')" class="p-4 border rounded-2xl mb-3 cursor-pointer hover:bg-zinc-50"><div class="text-blue-600 font-medium">یاسین نامنی — Personal Site</div><div class="text-xs text-emerald-700">${PROJECTS.yasin}</div></div>`;
+            if (query.toLowerCase().includes('prank')) html += `<div onclick="window.open('${PROJECTS.prank}','_blank')" class="p-4 border rounded-2xl mb-3 cursor-pointer hover:bg-zinc-50"><div class="text-blue-600 font-medium">Prank Project</div></div>`;
+            if (query.toLowerCase().includes('کانتر') || query.toLowerCase().includes('counter')) html += `<div onclick="window.open('${PROJECTS.counter}','_blank')" class="p-4 border rounded-2xl mb-3 cursor-pointer hover:bg-zinc-50"><div class="text-blue-600 font-medium">کانتر استرایک</div></div>`;
+            if (query.includes('ربات') || query.toLowerCase().includes('robot')) html += `<div onclick="window.open('${PROJECTS.robot}','_blank')" class="p-4 border rounded-2xl mb-3 cursor-pointer hover:bg-zinc-50"><div class="text-blue-600 font-medium">ربات هوشمند</div></div>`;
+            if (query.includes('آموزش') || query.toLowerCase().includes('bluecode')) html += `<div onclick="window.open('${PROJECTS.bluecode}','_blank')" class="p-4 border rounded-2xl mb-3 cursor-pointer hover:bg-zinc-50"><div class="text-blue-600 font-medium">آموزش برنامه‌نویسی</div></div>`;
+            
+            html += `</div>`;
+            content.innerHTML = html;
+        }
+        
+        function handleChromeSearch(winId, url) {
+            const content = document.getElementById('chrome-content-' + winId.split('-')[1]);
+            if (!content) return;
+            content.innerHTML = `<div class="p-8 text-center"><div class="text-xl mb-2">Opening...</div><div class="text-sm text-zinc-500">${url}</div><button onclick="window.open('${url}','_blank'); closeWindow('${winId}')" class="mt-5 px-5 py-2 bg-blue-600 text-white rounded-2xl text-sm">Open in new tab</button></div>`;
+        }
+        
+        function bringToFront(win) {
+            const all = document.querySelectorAll('#window-container > div');
+            let max = 150;
+            all.forEach(w => { const z = parseInt(w.style.zIndex)||150; if (z > max) max = z; });
+            win.style.zIndex = max + 1;
+        }
+        
+        function startDrag(e, winId) {
+            if (e.target.tagName === 'BUTTON') return;
+            currentDragWin = document.getElementById(winId);
+            if (!currentDragWin) return;
+            isDragging = true;
+            const rect = currentDragWin.getBoundingClientRect();
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
+            document.addEventListener('mousemove', doDrag);
+            document.addEventListener('mouseup', stopDrag, {once:true});
+            bringToFront(currentDragWin);
+        }
+        
+        function doDrag(e) {
+            if (!isDragging || !currentDragWin) return;
+            let left = e.clientX - offsetX;
+            let top = e.clientY - offsetY;
+            currentDragWin.style.left = Math.max(0, Math.min(left, window.innerWidth-200)) + 'px';
+            currentDragWin.style.top = Math.max(0, Math.min(top, window.innerHeight-80)) + 'px';
+        }
+        
+        function stopDrag() {
+            isDragging = false;
+            currentDragWin = null;
+            document.removeEventListener('mousemove', doDrag);
+        }
+        
+        function closeWindow(id) { const w = document.getElementById(id); if (w) w.remove(); }
+        function minimizeWindow(id) { const w = document.getElementById(id); if (w) w.style.display = 'none'; }
+        
+        function maximizeWindow(id) {
+            const w = document.getElementById(id);
+            if (!w) return;
+            if (w.dataset.max === 'true') {
+                w.style.left = w.dataset.pl || '130px';
+                w.style.top = w.dataset.pt || '65px';
+                w.style.width = w.dataset.pw || '740px';
+                w.style.height = w.dataset.ph || '520px';
+                w.dataset.max = 'false';
+            } else {
+                w.dataset.pl = w.style.left; w.dataset.pt = w.style.top;
+                w.dataset.pw = w.style.width; w.dataset.ph = w.style.height;
+                w.style.left = '6px'; w.style.top = '6px';
+                w.style.width = 'calc(100% - 12px)'; w.style.height = 'calc(100% - 64px)';
+                w.dataset.max = 'true';
+            }
+        }
+        
+        function shutdownFake() {
+            const d = document.getElementById('desktop');
+            d.style.transition = 'filter 1s ease';
+            d.style.filter = 'brightness(0)';
+            setTimeout(() => {
+                if (confirm('Restart Windows 11?')) location.reload();
+                else d.style.filter = '';
+            }, 850);
+        }
+        
+        function initialize() {
+            updateClock();
+            
+            setTimeout(() => {
+                const pw = document.getElementById('panel-wifi-icon');
+                if (pw) pw.className = 'fas fa-wifi text-white';
+            }, 150);
+            
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Meta' || e.key === 'OS') {
+                    e.preventDefault();
+                    const m = document.getElementById('start-menu');
+                    if (m.classList.contains('hidden')) {
+                        m.classList.remove('hidden'); m.classList.add('flex'); startMenuOpen = true;
+                    } else {
+                        m.classList.add('hidden'); m.classList.remove('flex'); startMenuOpen = false;
+                    }
+                }
+            });
+            
+            console.log('%c[Yasin Namani Windows 11] Final version loaded!', 'color:#64748b');
+        }
+        
+        window.onload = initialize;
+    </script>
+</body>
+</html>
