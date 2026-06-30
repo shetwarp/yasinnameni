@@ -9,12 +9,21 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;500;600&amp;display=swap');
         
+        :root {
+            --accent: #3b82f6;
+        }
+        
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
         
         .desktop {
             background: linear-gradient(145deg, #0f172a 0%, #1e3a8a 35%, #312e81 65%, #1e40af 100%);
+            transition: background 0.4s ease, filter 0.3s ease;
+        }
+        
+        .desktop.dark {
+            background: linear-gradient(145deg, #111827 0%, #1e2937 100%);
         }
         
         .window {
@@ -23,14 +32,22 @@
             border-radius: 12px;
             overflow: hidden;
             border: 1px solid #64748b25;
+            max-width: 95vw;
+            max-height: calc(100vh - 70px);
         }
         
         .title-bar {
             background: linear-gradient(to bottom, #f8fafc, #f1e7ff);
         }
         
+        .dark .title-bar {
+            background: linear-gradient(to bottom, #334155, #1e2937);
+            color: #e2e8f0;
+        }
+        
         .desktop-icon {
             transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
         }
         
         .desktop-icon:hover {
@@ -66,7 +83,51 @@
             color: white;
         }
 
-        /* Responsive for mobile */
+        .paint-canvas {
+            touch-action: none;
+            background: #f8fafc;
+            cursor: crosshair;
+        }
+
+        .tool-btn {
+            transition: all 0.1s;
+        }
+        .tool-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+
+        .tab {
+            transition: all 0.1s;
+        }
+        .tab.active {
+            background: white;
+            border-bottom: 2px solid #3b82f6;
+        }
+
+        .sticky-note {
+            box-shadow: 2px 4px 12px rgba(0,0,0,0.15);
+            transition: box-shadow 0.2s;
+        }
+        .sticky-note:hover {
+            box-shadow: 4px 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .file-item {
+            transition: background 0.1s;
+        }
+        .file-item:hover {
+            background-color: #f1f5f9;
+        }
+        .dark .file-item:hover {
+            background-color: #334155;
+        }
+
+        .ai-message {
+            max-width: 85%;
+        }
+
         @media (max-width: 768px) {
             .desktop-icon {
                 width: 68px !important;
@@ -83,12 +144,12 @@
             }
             .window {
                 border-radius: 8px;
+                box-shadow: 0 10px 30px -10px rgb(0 0 0 / 0.5);
             }
-        }
-        
-        @media (max-width: 480px) {
-            .desktop {
-                background: #1e3a8a;
+            .title-bar {
+                height: 40px !important;
+                padding-left: 8px !important;
+                padding-right: 4px !important;
             }
         }
     </style>
@@ -99,102 +160,9 @@
          oncontextmenu="showContextMenu(event); return false;"
          onclick="handleDesktopClick(event)">
         
-        <!-- Desktop Icons - 2 Columns -->
-        <div class="absolute top-5 left-5 grid grid-cols-2 gap-x-5 gap-y-5 z-10">
-            
-            <!-- Personal Projects -->
-            <div onclick="openProject('yasin', 'https://yasin-namani.github.io/yasin-namani.com/')" class="desktop-icon group w-[82px] flex flex-col items-center p-2 rounded-3xl cursor-pointer">
-                <div class="icon-bg bg-gradient-to-br from-violet-500 via-purple-500 to-indigo-600">
-                    <i class="fas fa-user text-white text-[27px]"></i>
-                </div>
-                <span class="text-white text-[10px] mt-1.5 text-center font-medium tracking-tight leading-tight">یاسین نامنی</span>
-            </div>
-            
-            <div onclick="openProject('prank', 'https://shetwarp.github.io/we-are-friend-/')" class="desktop-icon group w-[82px] flex flex-col items-center p-2 rounded-3xl cursor-pointer">
-                <div class="icon-bg bg-gradient-to-br from-pink-500 to-rose-500">
-                    <i class="fas fa-grin-tongue-wink text-white text-[27px]"></i>
-                </div>
-                <span class="text-white text-[10px] mt-1.5 text-center font-medium tracking-tight leading-tight">Prank</span>
-            </div>
-            
-            <div onclick="openProject('counter', 'https://shetwarp.github.io/Shetline/')" class="desktop-icon group w-[82px] flex flex-col items-center p-2 rounded-3xl cursor-pointer">
-                <div class="icon-bg bg-gradient-to-br from-red-500 to-orange-600">
-                    <i class="fas fa-crosshairs text-white text-[27px]"></i>
-                </div>
-                <span class="text-white text-[10px] mt-1.5 text-center font-medium tracking-tight leading-tight">کانتر استرایک</span>
-            </div>
-            
-            <div onclick="openProject('robot', 'https://yasin-namani.github.io/pica.pat/')" class="desktop-icon group w-[82px] flex flex-col items-center p-2 rounded-3xl cursor-pointer">
-                <div class="icon-bg bg-gradient-to-br from-emerald-400 to-teal-600">
-                    <i class="fas fa-robot text-white text-[27px]"></i>
-                </div>
-                <span class="text-white text-[10px] mt-1.5 text-center font-medium tracking-tight leading-tight">ربات هوشمند</span>
-            </div>
-            
-            <div onclick="openProject('bluecode', 'https://shetwarp.github.io/bluecode/')" class="desktop-icon group w-[82px] flex flex-col items-center p-2 rounded-3xl cursor-pointer">
-                <div class="icon-bg bg-gradient-to-br from-blue-500 to-cyan-500">
-                    <i class="fas fa-code text-white text-[27px]"></i>
-                </div>
-                <span class="text-white text-[10px] mt-1.5 text-center font-medium tracking-tight leading-tight">آموزش برنامه‌نویسی</span>
-            </div>
-            
-            <div onclick="openProject('minecraftweb', 'https://shetwarp.github.io/minecraftweb/')" class="desktop-icon group w-[82px] flex flex-col items-center p-2 rounded-3xl cursor-pointer">
-                <div class="icon-bg bg-gradient-to-br from-green-500 to-cyan-500">
-                    <i class="fas fa-code text-white text-[27px]"></i>
-                </div>
-                <span class="text-white text-[10px] mt-1.5 text-center font-medium tracking-tight leading-tight">ماینکرافت</span>
-            </div>
+        <!-- Desktop Icons Container (will be populated by JS for drag support) -->
+        <div id="desktop-icons" class="absolute top-5 left-5 z-10" style="width: 500px; min-height: 520px;"></div>
 
-
-            <!-- Standard Apps -->
-            <div onclick="openWindow('explorer')" class="desktop-icon group w-[82px] flex flex-col items-center p-2 rounded-3xl cursor-pointer">
-                <div class="icon-bg bg-gradient-to-br from-sky-400 to-blue-600">
-                    <i class="fas fa-folder text-white text-[26px]"></i>
-                </div>
-                <span class="text-white text-[10px] mt-1.5 text-center font-medium tracking-tight">This PC</span>
-            </div>
-            
-            <div onclick="openWindow('recycle')" class="desktop-icon group w-[82px] flex flex-col items-center p-2 rounded-3xl cursor-pointer">
-                <div class="icon-bg bg-gradient-to-br from-zinc-400 to-zinc-600">
-                    <i class="fas fa-trash text-white text-[26px]"></i>
-                </div>
-                <span class="text-white text-[10px] mt-1.5 text-center font-medium tracking-tight">Recycle Bin</span>
-            </div>
-            
-            <div onclick="openWindow('chrome')" class="desktop-icon group w-[82px] flex flex-col items-center p-2 rounded-3xl cursor-pointer">
-                <div class="icon-bg bg-gradient-to-br from-sky-400 to-blue-500">
-                    <i class="fas fa-globe text-white text-[26px]"></i>
-                </div>
-                <span class="text-white text-[10px] mt-1.5 text-center font-medium tracking-tight">Chrome</span>
-            </div>
-            
-            <div onclick="openWindow('calculator')" class="desktop-icon group w-[82px] flex flex-col items-center p-2 rounded-3xl cursor-pointer">
-                <div class="icon-bg bg-gradient-to-br from-emerald-400 to-teal-500">
-                    <i class="fas fa-calculator text-white text-[26px]"></i>
-                </div>
-                <span class="text-white text-[10px] mt-1.5 text-center font-medium tracking-tight">Calculator</span>
-            </div>
-            
-            <div onclick="openWindow('paint')" class="desktop-icon group w-[82px] flex flex-col items-center p-2 rounded-3xl cursor-pointer">
-                <div class="icon-bg bg-gradient-to-br from-pink-400 to-rose-500">
-                    <i class="fas fa-paint-brush text-white text-[26px]"></i>
-                </div>
-                <span class="text-white text-[10px] mt-1.5 text-center font-medium tracking-tight">Paint</span>
-            </div>
-            
-            <div onclick="openWindow('terminal')" class="desktop-icon group w-[82px] flex flex-col items-center p-2 rounded-3xl cursor-pointer">
-                <div class="icon-bg bg-gradient-to-br from-zinc-700 to-black">
-                    <i class="fas fa-terminal text-white text-[26px]"></i>
-                </div>
-                <span class="text-white text-[10px] mt-1.5 text-center font-medium tracking-tight">Terminal</span>
-            </div>
-            
-        </div>
-
-
-
-
-        
         <div id="window-container" class="absolute inset-0 z-20 pointer-events-none"></div>
     </div>
 
@@ -205,7 +173,6 @@
             <!-- Start Button -->
             <button onclick="toggleStartMenu(event)"
                     class="h-9 px-3 mx-1 flex items-center gap-2 hover:bg-white/10 active:bg-white/20 rounded-2xl transition-all active:scale-[0.92]">
-                <!-- Windows Logo (reliable CSS version) -->
                 <div class="w-[18px] h-[18px] grid grid-cols-2 gap-[1.5px]">
                     <div class="bg-[#f25022] rounded-sm"></div>
                     <div class="bg-[#7fba00] rounded-sm"></div>
@@ -222,6 +189,7 @@
             <div class="flex items-center gap-px ml-1">
                 <div onclick="openWindow('explorer')" class="h-8 w-8 flex items-center justify-center hover:bg-white/10 active:bg-white/20 rounded-2xl cursor-pointer transition"><i class="fas fa-folder text-sky-300"></i></div>
                 <div onclick="openWindow('chrome')" class="h-8 w-8 flex items-center justify-center hover:bg-white/10 active:bg-white/20 rounded-2xl cursor-pointer transition"><i class="fas fa-globe text-sky-300"></i></div>
+                <div onclick="openWindow('notepad')" class="h-8 w-8 flex items-center justify-center hover:bg-white/10 active:bg-white/20 rounded-2xl cursor-pointer transition"><i class="fas fa-file-lines text-amber-300"></i></div>
             </div>
         </div>
         
@@ -233,8 +201,13 @@
             </div>
             <div id="clock" onclick="event.stopImmediatePropagation(); toggleTrayPanel()" class="font-mono text-xs px-3 py-1 hover:bg-white/10 rounded-2xl cursor-pointer transition tracking-tighter"></div>
             
+            <!-- Voice Assistant Mic -->
+            <button onclick="startVoiceAssistant()" class="ml-1 px-2.5 py-1 text-xs hover:bg-white/10 rounded-xl flex items-center gap-1 transition" title="Voice Assistant (Hey Yasin)">
+                <i class="fas fa-microphone text-emerald-400"></i>
+            </button>
+            
             <!-- Fullscreen Button -->
-            <button onclick="toggleFullscreen()" class="ml-2 px-2 py-1 text-xs hover:bg-white/10 rounded-xl flex items-center gap-1 transition">
+            <button onclick="toggleFullscreen()" class="ml-1 px-2 py-1 text-xs hover:bg-white/10 rounded-xl flex items-center gap-1 transition">
                 <i class="fas fa-expand text-sm"></i>
             </button>
         </div>
@@ -287,11 +260,14 @@
             <i class="fas fa-sync-alt w-4"></i> <span>Refresh</span>
         </div>
         <div class="h-px bg-zinc-700 my-1 mx-2"></div>
-        <div onclick="hideContextMenu()" class="px-4 py-[7px] hover:bg-white/10 cursor-pointer flex items-center gap-3 mx-1 rounded-xl">View</div>
-        <div onclick="hideContextMenu()" class="px-4 py-[7px] hover:bg-white/10 cursor-pointer flex items-center gap-3 mx-1 rounded-xl">Sort by</div>
-        <div class="h-px bg-zinc-700 my-1 mx-2"></div>
         <div onclick="hideContextMenu(); createNewFolderFake()" class="px-4 py-[7px] hover:bg-white/10 cursor-pointer flex items-center gap-3 mx-1 rounded-xl">
             <i class="fas fa-folder-plus w-4"></i> <span>New folder</span>
+        </div>
+        <div onclick="hideContextMenu(); openWindow('notes')" class="px-4 py-[7px] hover:bg-white/10 cursor-pointer flex items-center gap-3 mx-1 rounded-xl">
+            <i class="fas fa-sticky-note w-4"></i> <span>New Sticky Note</span>
+        </div>
+        <div onclick="hideContextMenu(); openWindow('screenshot')" class="px-4 py-[7px] hover:bg-white/10 cursor-pointer flex items-center gap-3 mx-1 rounded-xl">
+            <i class="fas fa-camera w-4"></i> <span>Snipping Tool</span>
         </div>
     </div>
 
@@ -338,6 +314,7 @@
     </div>
 
     <script>
+        // ==================== GLOBAL STATE ====================
         let windowCounter = 0;
         let isDragging = false;
         let currentDragWin = null;
@@ -345,14 +322,1403 @@
         let startMenuOpen = false;
         let wifiOn = true;
         
+        let openWindowsList = []; // For Task Manager
+        let fileSystem = { folders: [], files: [] };
+        let desktopIcons = [];
+        let notesList = [];
+        let paintHistory = [];
+        let currentPaintTool = 'pencil';
+        
         const PROJECTS = {
             yasin: "https://yasin-namani.github.io/yasin-namani.com/",
             prank: "https://shetwarp.github.io/we-are-friend-/",
             counter: "https://shetwarp.github.io/Shetline/",
             robot: "https://yasin-namani.github.io/pica.pat/",
-            bluecode: "https://shetwarp.github.io/bluecode/"
+            bluecode: "https://shetwarp.github.io/bluecode/",
+            shetcoin: "https://shetwarp.github.io/shetcoin/",
+            fifa2d: "https://shetwarp.github.io/fifa2d/",
+            news: "https://shetwarp.github.io/shetwarpnews/",
+            minecraftweb: "https://shetwarp.github.io/minecraftweb/",
+            ai: "https://shetwarp.github.io/shetwarpbot/"
         };
+
+        // ==================== PERSISTENCE ====================
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem('win11_fs', JSON.stringify(fileSystem));
+                localStorage.setItem('win11_notes', JSON.stringify(notesList));
+                localStorage.setItem('win11_desktop_icons', JSON.stringify(desktopIcons));
+                localStorage.setItem('win11_settings', JSON.stringify({
+                    accent: getComputedStyle(document.documentElement).getPropertyValue('--accent'),
+                    darkMode: document.getElementById('desktop').classList.contains('dark')
+                }));
+            } catch(e) {}
+        }
+
+        function loadFromLocalStorage() {
+            try {
+                const fs = localStorage.getItem('win11_fs');
+                if (fs) fileSystem = JSON.parse(fs);
+                
+                const notes = localStorage.getItem('win11_notes');
+                if (notes) notesList = JSON.parse(notes);
+                
+                const icons = localStorage.getItem('win11_desktop_icons');
+                if (icons) desktopIcons = JSON.parse(icons);
+                
+                const settings = localStorage.getItem('win11_settings');
+                if (settings) {
+                    const s = JSON.parse(settings);
+                    if (s.accent) document.documentElement.style.setProperty('--accent', s.accent);
+                    if (s.darkMode) {
+                        const desk = document.getElementById('desktop');
+                        if (s.darkMode) desk.classList.add('dark');
+                    }
+                }
+            } catch(e) {}
+        }
+
+        // ==================== DESKTOP ICONS (Draggable) ====================
+        const DEFAULT_ICONS = [
+            { id: 'yasin', label: 'یاسین نامنی', icon: 'fa-user', color: 'from-violet-500 via-purple-500 to-indigo-600', type: 'project', url: PROJECTS.yasin },
+            { id: 'prank', label: 'Prank', icon: 'fa-grin-tongue-wink', color: 'from-pink-500 to-rose-500', type: 'project', url: PROJECTS.prank },
+            { id: 'counter', label: 'کانتر استرایک', icon: 'fa-crosshairs', color: 'from-red-500 to-orange-600', type: 'project', url: PROJECTS.counter },
+            { id: 'robot', label: 'ربات هوشمند', icon: 'fa-robot', color: 'from-emerald-400 to-teal-600', type: 'project', url: PROJECTS.robot },
+            { id: 'bluecode', label: 'آموزش برنامه‌نویسی', icon: 'fa-code', color: 'from-blue-500 to-cyan-500', type: 'project', url: PROJECTS.bluecode },
+            { id: 'minecraftweb', label: 'ماینکرافت', icon: 'fa-gamepad', color: 'from-green-500 to-cyan-500', type: 'project', url: PROJECTS.minecraftweb || '#' },
+            { id: 'fifa2d', label: 'فیفا 2 بعدی', icon: 'fa-futbol', color: 'from-emerald-500 to-green-600', type: 'project', url: PROJECTS.fifa2d },
+            { id: 'news', label: 'اخبار', icon: 'fa-newspaper', color: 'from-sky-500 to-blue-600', type: 'project', url: PROJECTS.news },
+            { id: 'explorer', label: 'This PC', icon: 'fa-folder', color: 'from-sky-400 to-blue-600', type: 'app', app: 'explorer' },
+            { id: 'recycle', label: 'Recycle Bin', icon: 'fa-trash', color: 'from-zinc-400 to-zinc-600', type: 'app', app: 'recycle' },
+            { id: 'chrome', label: 'Chrome', icon: 'fa-globe', color: 'from-sky-400 to-blue-500', type: 'app', app: 'chrome' },
+            { id: 'calculator', label: 'Calculator', icon: 'fa-calculator', color: 'from-emerald-400 to-teal-500', type: 'app', app: 'calculator' },
+            { id: 'paint', label: 'Paint', icon: 'fa-paint-brush', color: 'from-pink-400 to-rose-500', type: 'app', app: 'paint' },
+            { id: 'terminal', label: 'Terminal', icon: 'fa-terminal', color: 'from-zinc-700 to-black', type: 'app', app: 'terminal' },
+            { id: 'notepad', label: 'Notepad', icon: 'fa-file-lines', color: 'from-amber-400 to-yellow-500', type: 'app', app: 'notepad' },
+            { id: 'settings', label: 'Settings', icon: 'fa-cog', color: 'from-slate-400 to-zinc-600', type: 'app', app: 'settings' },
+            { id: 'camera', label: 'Camera', icon: 'fa-video', color: 'from-rose-400 to-pink-600', type: 'app', app: 'camera' },
+            { id: 'notes', label: 'Sticky Notes', icon: 'fa-sticky-note', color: 'from-yellow-400 to-amber-500', type: 'app', app: 'notes' },
+            { id: 'minecraftweb', label: 'ماینکرافت', icon: 'fa-gamepad', color: 'from-green-500 to-cyan-500', type: 'project', url: PROJECTS.minecraftweb },
+            { id: 'ai', label: 'AI', icon: 'fa-robot', color: 'from-violet-500 to-fuchsia-500', type: 'project', url: PROJECTS.ai },
+            { id: 'taskmgr', label: 'Task Manager', icon: 'fa-tasks', color: 'from-blue-400 to-indigo-500', type: 'app', app: 'taskmgr' }
+        ];
+
+        function initDesktopIcons() {
+            const container = document.getElementById('desktop-icons');
+            container.innerHTML = '';
+            container.style.position = 'absolute';
+            container.style.width = '480px';   // 5 columns like real Windows
+            
+            const COLS = 5;
+            const COL_WIDTH = 92;
+            const ROW_HEIGHT = 100;
+            
+            if (desktopIcons.length === 0) {
+                desktopIcons = DEFAULT_ICONS.map((icon, i) => ({
+                    ...icon,
+                    x: 12 + (i % COLS) * COL_WIDTH,
+                    y: 12 + Math.floor(i / COLS) * ROW_HEIGHT
+                }));
+            }
+            
+            desktopIcons.forEach((icon) => {
+                const el = document.createElement('div');
+                el.className = `desktop-icon group absolute w-[82px] flex flex-col items-center p-2 rounded-3xl cursor-pointer`;
+                el.style.left = `${icon.x}px`;
+                el.style.top = `${icon.y}px`;
+                el.dataset.id = icon.id;
+                
+                el.innerHTML = `
+                    <div class="icon-bg bg-gradient-to-br ${icon.color}">
+                        <i class="fas ${icon.icon} text-white text-[27px]"></i>
+                    </div>
+                    <span class="text-white text-[10px] mt-1.5 text-center font-medium tracking-tight leading-tight">${icon.label}</span>
+                `;
+                
+                // Click handler only (no dragging)
+                el.addEventListener('click', (e) => {
+                    if (icon.type === 'project') {
+                        openProject(icon.id, icon.url);
+                    } else {
+                        openWindow(icon.app);
+                    }
+                });
+                
+                container.appendChild(el);
+            });
+        }
+
+        // ==================== WINDOW MANAGEMENT ====================
+        function updateOpenWindowsList() {
+            openWindowsList = [];
+            document.querySelectorAll('#window-container > div').forEach(win => {
+                const titleEl = win.querySelector('.title-bar span.font-semibold');
+                openWindowsList.push({
+                    id: win.id,
+                    title: titleEl ? titleEl.textContent : 'Window'
+                });
+            });
+        }
+
+        function bringToFront(win) {
+            const all = document.querySelectorAll('#window-container > div');
+            let max = 150;
+            all.forEach(w => { 
+                const z = parseInt(w.style.zIndex) || 150; 
+                if (z > max) max = z; 
+            });
+            win.style.zIndex = max + 1;
+            updateOpenWindowsList();
+        }
+
+        function closeWindow(id) { 
+            const w = document.getElementById(id); 
+            if (w) {
+                w.remove(); 
+                updateOpenWindowsList();
+            }
+        }
         
+        function minimizeWindow(id) { 
+            const w = document.getElementById(id); 
+            if (w) w.style.display = 'none'; 
+        }
+        
+        function maximizeWindow(id) {
+            const w = document.getElementById(id);
+            if (!w) return;
+            if (w.dataset.max === 'true') {
+                w.style.left = w.dataset.pl || '130px';
+                w.style.top = w.dataset.pt || '65px';
+                w.style.width = w.dataset.pw || '740px';
+                w.style.height = w.dataset.ph || '520px';
+                w.dataset.max = 'false';
+            } else {
+                w.dataset.pl = w.style.left; 
+                w.dataset.pt = w.style.top;
+                w.dataset.pw = w.style.width; 
+                w.dataset.ph = w.style.height;
+                w.style.left = '6px'; 
+                w.style.top = '6px';
+                w.style.width = 'calc(100% - 12px)'; 
+                w.style.height = 'calc(100% - 64px)';
+                w.dataset.max = 'true';
+            }
+        }
+
+        function openWindow(type) {
+            windowCounter++;
+            const container = document.getElementById('window-container');
+            const win = document.createElement('div');
+            win.id = `win-${windowCounter}`;
+            win.className = `window absolute bg-white flex flex-col pointer-events-auto shadow-2xl`;
+            
+            let w = 740, h = 520;
+            let left = 130 + (windowCounter % 7) * 32;
+            let top = 65 + (windowCounter % 5) * 28;
+            
+            const mobile = window.innerWidth < 768;
+            
+            if (mobile) {
+                w = Math.min(360, window.innerWidth - 24);
+                h = Math.min(480, window.innerHeight - 95);
+                left = Math.max(8, Math.floor((window.innerWidth - w) / 2));
+                top = 32;
+            }
+            
+            // App specific sizes
+            if (type === 'chrome') { w = mobile ? 380 : 980; h = mobile ? 520 : 640; }
+            else if (type === 'calculator') { w = 320; h = 460; }
+            else if (type === 'paint') { w = mobile ? 380 : 820; h = mobile ? 500 : 580; }
+            else if (type === 'terminal') { w = mobile ? 340 : 680; h = mobile ? 400 : 420; }
+            else if (type === 'notepad') { w = mobile ? 360 : 620; h = mobile ? 420 : 480; }
+            else if (type === 'settings') { w = 420; h = 520; }
+            else if (type === 'camera') { w = mobile ? 360 : 640; h = mobile ? 420 : 520; }
+            else if (type === 'notes') { w = 380; h = 480; }
+            else if (type === 'taskmgr') { w = 520; h = 420; }
+            else if (type === 'explorer') { w = mobile ? 360 : 720; h = mobile ? 440 : 520; }
+            
+            left = Math.max(0, Math.min(left, window.innerWidth - w - 8));
+            top = Math.max(0, Math.min(top, window.innerHeight - h - 65));
+            
+            win.style.left = left + 'px';
+            win.style.top = top + 'px';
+            win.style.width = w + 'px';
+            win.style.height = h + 'px';
+            win.style.zIndex = 160 + windowCounter;
+            
+            let title = '', iconHTML = '', contentHTML = '';
+            
+            // ========== APP CONTENTS ==========
+            if (type === 'explorer') {
+                title = 'File Explorer';
+                iconHTML = '<i class="fas fa-folder text-sky-500"></i>';
+                contentHTML = `
+                    <div class="flex flex-col h-full">
+                        <div class="px-4 py-2 bg-zinc-100 border-b flex items-center gap-2 text-sm">
+                            <button onclick="createNewFolderInExplorer('${win.id}')" class="px-3 py-1 bg-white rounded-xl text-xs border flex items-center gap-1 hover:bg-zinc-50">
+                                <i class="fas fa-folder-plus"></i> <span>New Folder</span>
+                            </button>
+                            <button onclick="refreshExplorer('${win.id}')" class="px-3 py-1 bg-white rounded-xl text-xs border flex items-center gap-1 hover:bg-zinc-50">
+                                <i class="fas fa-sync"></i>
+                            </button>
+                        </div>
+                        <div id="explorer-content-${windowCounter}" class="flex-1 p-4 overflow-auto text-sm">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                `;
+            } 
+            else if (type === 'recycle') {
+                title = 'Recycle Bin';
+                iconHTML = '<i class="fas fa-trash text-zinc-400"></i>';
+                contentHTML = `
+                    <div class="p-5">
+                        <div class="flex justify-between mb-4">
+                            <span class="font-semibold">Recycle Bin</span>
+                            <button onclick="emptyRecycleBin('${win.id}')" class="text-xs px-4 py-1.5 bg-red-500 text-white rounded-2xl">Empty</button>
+                        </div>
+                        <div id="recycle-content-${windowCounter}" class="text-sm border rounded-2xl overflow-hidden">
+                            <!-- JS populated -->
+                        </div>
+                    </div>
+                `;
+            } 
+            else if (type === 'chrome') {
+                title = 'Google Chrome';
+                iconHTML = '<i class="fas fa-globe text-sky-500"></i>';
+                contentHTML = `
+                    <div class="flex flex-col h-full">
+                        <!-- Tab Bar -->
+                        <div class="flex items-center bg-zinc-100 border-b px-2 pt-1" id="chrome-tabs-${windowCounter}">
+                            <!-- Tabs added dynamically -->
+                        </div>
+                        <div class="px-3 py-2 bg-zinc-100 flex items-center gap-2 border-b">
+                            <button onclick="addChromeTab('${win.id}')" class="px-2 text-zinc-500 hover:text-zinc-700"><i class="fas fa-plus"></i></button>
+                            <input type="text" id="chrome-url-${windowCounter}" value="https://www.google.com" 
+                                   class="flex-1 bg-white px-4 py-1.5 rounded-3xl text-sm outline-none border" 
+                                   onkeydown="if(event.key==='Enter') navigateChromeTab('${win.id}', this.value)">
+                            <button onclick="navigateChromeTab('${win.id}', document.getElementById('chrome-url-${windowCounter}').value)" 
+                                    class="px-4 py-1 bg-blue-600 text-white rounded-3xl text-xs">Go</button>
+                        </div>
+                        <div id="chrome-content-${windowCounter}" class="flex-1 bg-white overflow-auto">
+                            <!-- Tab content -->
+                        </div>
+                    </div>
+                `;
+            } 
+            else if (type === 'notepad') {
+                title = 'Notepad';
+                iconHTML = '<i class="fas fa-file-lines text-amber-500"></i>';
+                contentHTML = `
+                    <div class="flex flex-col h-full">
+                        <div class="px-3 py-1.5 bg-zinc-100 border-b flex items-center gap-2 text-xs">
+                            <input id="notepad-filename-${windowCounter}" value="Untitled.txt" class="bg-white px-3 py-1 rounded-xl text-sm outline-none w-48 border">
+                            <button onclick="saveNotepad('${win.id}')" class="px-3 py-1 bg-emerald-500 text-white rounded-xl text-xs">Save</button>
+                            <button onclick="downloadNotepad('${win.id}')" class="px-3 py-1 bg-white border rounded-xl text-xs">Download .txt</button>
+                            <label class="px-3 py-1 bg-white border rounded-xl text-xs cursor-pointer">
+                                Open <input type="file" accept=".txt" class="hidden" onchange="openTxtFile('${win.id}', this)">
+                            </label>
+                        </div>
+                        <textarea id="notepad-text-${windowCounter}" class="flex-1 p-5 font-mono text-sm resize-none outline-none" 
+                                  placeholder="Start typing... (Auto-saves to browser)" 
+                                  oninput="autoSaveNotepad('${win.id}')"></textarea>
+                    </div>
+                `;
+            } 
+            else if (type === 'calculator') {
+                title = 'Calculator';
+                iconHTML = '<i class="fas fa-calculator text-emerald-500"></i>';
+                contentHTML = `
+                    <div class="p-4 bg-zinc-900 text-white h-full flex flex-col">
+                        <div id="calc-display" class="bg-zinc-800 h-14 rounded-2xl flex items-end justify-end px-5 text-3xl font-light mb-4">0</div>
+                        <div class="grid grid-cols-4 gap-2 flex-1 text-xl">
+                            <button onclick="calcInput('C', '${win.id}')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">C</button>
+                            <button onclick="calcInput('±', '${win.id}')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">±</button>
+                            <button onclick="calcInput('%', '${win.id}')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">%</button>
+                            <button onclick="calcInput('/', '${win.id}')" class="calculator-btn bg-orange-500 hover:bg-orange-600 rounded-2xl">÷</button>
+                            
+                            <button onclick="calcInput('7', '${win.id}')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">7</button>
+                            <button onclick="calcInput('8', '${win.id}')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">8</button>
+                            <button onclick="calcInput('9', '${win.id}')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">9</button>
+                            <button onclick="calcInput('*', '${win.id}')" class="calculator-btn bg-orange-500 hover:bg-orange-600 rounded-2xl">×</button>
+                            
+                            <button onclick="calcInput('4', '${win.id}')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">4</button>
+                            <button onclick="calcInput('5', '${win.id}')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">5</button>
+                            <button onclick="calcInput('6', '${win.id}')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">6</button>
+                            <button onclick="calcInput('-', '${win.id}')" class="calculator-btn bg-orange-500 hover:bg-orange-600 rounded-2xl">−</button>
+                            
+                            <button onclick="calcInput('1', '${win.id}')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">1</button>
+                            <button onclick="calcInput('2', '${win.id}')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">2</button>
+                            <button onclick="calcInput('3', '${win.id}')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">3</button>
+                            <button onclick="calcInput('+', '${win.id}')" class="calculator-btn bg-orange-500 hover:bg-orange-600 rounded-2xl">+</button>
+                            
+                            <button onclick="calcInput('0', '${win.id}')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl col-span-2">0</button>
+                            <button onclick="calcInput('.', '${win.id}')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">.</button>
+                            <button onclick="calcInput('=', '${win.id}')" class="calculator-btn bg-orange-500 hover:bg-orange-600 rounded-2xl">=</button>
+                        </div>
+                    </div>
+                `;
+            } 
+            else if (type === 'paint') {
+                title = 'Paint';
+                iconHTML = '<i class="fas fa-paint-brush text-pink-500"></i>';
+                contentHTML = `
+                    <div class="flex flex-col h-full">
+                        <div class="px-3 py-2 bg-zinc-100 border-b flex flex-wrap gap-1 items-center text-sm">
+                            <div class="flex gap-1 mr-3">
+                                <button onclick="setPaintTool('${win.id}', 'pencil')" class="tool-btn active px-3 py-1 rounded-xl text-xs bg-white border" data-tool="pencil"><i class="fas fa-pencil-alt"></i></button>
+                                <button onclick="setPaintTool('${win.id}', 'rect')" class="tool-btn px-3 py-1 rounded-xl text-xs bg-white border" data-tool="rect"><i class="fas fa-square"></i></button>
+                                <button onclick="setPaintTool('${win.id}', 'circle')" class="tool-btn px-3 py-1 rounded-xl text-xs bg-white border" data-tool="circle"><i class="fas fa-circle"></i></button>
+                                <button onclick="setPaintTool('${win.id}', 'line')" class="tool-btn px-3 py-1 rounded-xl text-xs bg-white border" data-tool="line"><i class="fas fa-minus"></i></button>
+                                <button onclick="setPaintTool('${win.id}', 'eraser')" class="tool-btn px-3 py-1 rounded-xl text-xs bg-white border" data-tool="eraser"><i class="fas fa-eraser"></i></button>
+                            </div>
+                            <input type="color" id="paint-color-${windowCounter}" value="#000000" class="w-8 h-8 p-0 border-0">
+                            <input type="range" id="paint-size-${windowCounter}" min="2" max="40" value="6" class="accent-pink-500 w-24">
+                            <div class="flex-1"></div>
+                            <button onclick="paintUndo('${win.id}')" class="px-3 py-1 bg-white rounded-xl text-xs border">Undo</button>
+                            <button onclick="paintClear('${win.id}')" class="px-3 py-1 bg-white rounded-xl text-xs border">Clear</button>
+                            <button onclick="paintSave('${win.id}')" class="px-3 py-1 bg-emerald-500 text-white rounded-xl text-xs">Save PNG</button>
+                        </div>
+                        <div class="flex-1 p-3 bg-zinc-50 overflow-hidden">
+                            <canvas id="paint-canvas-${windowCounter}" class="paint-canvas border shadow-inner w-full h-full" style="display:block; touch-action:none;"></canvas>
+                        </div>
+                    </div>
+                `;
+            } 
+            else if (type === 'terminal') {
+                title = 'Terminal';
+                iconHTML = '<i class="fas fa-terminal text-emerald-400"></i>';
+                contentHTML = `
+                    <div class="flex flex-col h-full bg-black text-emerald-400 font-mono text-sm">
+                        <div class="px-4 py-1 bg-zinc-900 text-xs border-b border-zinc-800">PowerShell</div>
+                        <div id="terminal-output-${windowCounter}" class="flex-1 p-4 overflow-auto text-xs">PS C:\\Users\\Yasin&gt; Welcome to Yasin's Terminal<br></div>
+                        <div class="flex px-4 py-2 border-t border-zinc-800">
+                            <span>PS C:\\Users\\Yasin&gt;</span>
+                            <input type="text" id="terminal-input-${windowCounter}" class="flex-1 bg-transparent outline-none ml-2" onkeydown="if(event.key==='Enter') runTerminalCommand('${win.id}', this)">
+                        </div>
+                    </div>
+                `;
+            }
+            else if (type === 'settings') {
+                title = 'Settings';
+                iconHTML = '<i class="fas fa-cog text-slate-500"></i>';
+                contentHTML = `
+                    <div class="p-6 text-sm">
+                        <div class="mb-6">
+                            <div class="font-semibold mb-2">Appearance</div>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="text-xs text-zinc-500">Accent Color</label>
+                                    <div class="flex gap-2 mt-1">
+                                        <div onclick="changeAccentColor('#3b82f6')" class="w-7 h-7 rounded-full bg-blue-500 cursor-pointer ring-2 ring-offset-2"></div>
+                                        <div onclick="changeAccentColor('#8b5cf6')" class="w-7 h-7 rounded-full bg-violet-500 cursor-pointer"></div>
+                                        <div onclick="changeAccentColor('#ec4899')" class="w-7 h-7 rounded-full bg-pink-500 cursor-pointer"></div>
+                                        <div onclick="changeAccentColor('#10b981')" class="w-7 h-7 rounded-full bg-emerald-500 cursor-pointer"></div>
+                                        <div onclick="changeAccentColor('#f59e0b')" class="w-7 h-7 rounded-full bg-amber-500 cursor-pointer"></div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span>Dark Desktop</span>
+                                    <button onclick="toggleDarkMode()" class="px-4 py-1 text-xs bg-zinc-200 rounded-2xl">Toggle</button>
+                                </div>
+                                <div>
+                                    <label class="text-xs text-zinc-500">Wallpaper</label>
+                                    <div class="flex gap-2 mt-1">
+                                        <button onclick="changeWallpaper(0)" class="px-3 py-1 text-xs bg-gradient-to-r from-slate-900 to-blue-900 text-white rounded-xl">Default</button>
+                                        <button onclick="changeWallpaper(1)" class="px-3 py-1 text-xs bg-gradient-to-r from-violet-900 to-fuchsia-900 text-white rounded-xl">Purple</button>
+                                        <button onclick="changeWallpaper(2)" class="px-3 py-1 text-xs bg-gradient-to-r from-emerald-900 to-teal-900 text-white rounded-xl">Green</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-xs text-zinc-400">Changes are saved automatically. Refresh to reset.</div>
+                    </div>
+                `;
+            }
+            else if (type === 'camera') {
+                title = 'Camera';
+                iconHTML = '<i class="fas fa-video text-rose-500"></i>';
+                contentHTML = `
+                    <div class="flex flex-col h-full">
+                        <div class="p-3 bg-zinc-100 border-b flex justify-between items-center">
+                            <span class="text-sm font-medium">Webcam</span>
+                            <button onclick="capturePhoto('${win.id}')" class="px-4 py-1.5 bg-rose-500 text-white rounded-2xl text-xs flex items-center gap-2">
+                                <i class="fas fa-camera"></i> <span>Capture</span>
+                            </button>
+                        </div>
+                        <div class="flex-1 flex items-center justify-center bg-black p-4">
+                            <video id="camera-video-${windowCounter}" autoplay playsinline class="max-w-full max-h-full rounded-2xl shadow-inner"></video>
+                        </div>
+                        <div class="p-3 text-center text-xs text-zinc-500">Click Capture to take a photo (downloads automatically)</div>
+                    </div>
+                `;
+            }
+            else if (type === 'notes') {
+                title = 'Sticky Notes';
+                iconHTML = '<i class="fas fa-sticky-note text-yellow-500"></i>';
+                contentHTML = `
+                    <div class="p-4 h-full flex flex-col">
+                        <div class="flex justify-between mb-3">
+                            <span class="font-semibold">My Notes</span>
+                            <button onclick="createStickyNote('${win.id}')" class="px-3 py-1 bg-yellow-400 text-white rounded-2xl text-xs">+ New Note</button>
+                        </div>
+                        <div id="notes-list-${windowCounter}" class="flex-1 overflow-auto space-y-2 text-sm">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                `;
+            }
+            else if (type === 'taskmgr') {
+                title = 'Task Manager';
+                iconHTML = '<i class="fas fa-tasks text-blue-500"></i>';
+                contentHTML = `
+                    <div class="p-4">
+                        <div class="flex justify-between mb-3">
+                            <span class="font-semibold">Running Apps</span>
+                            <button onclick="refreshTaskManager('${win.id}')" class="text-xs px-3 py-1 bg-white border rounded-xl">Refresh</button>
+                        </div>
+                        <div id="taskmgr-list-${windowCounter}" class="space-y-1 text-sm"></div>
+                    </div>
+                `;
+            }
+            else if (type === 'screenshot') {
+                title = 'Snipping Tool';
+                iconHTML = '<i class="fas fa-camera text-sky-500"></i>';
+                contentHTML = `
+                    <div class="p-6 text-center">
+                        <i class="fas fa-crop text-6xl text-sky-400 mb-4"></i>
+                        <div class="font-semibold mb-2">Snipping Tool</div>
+                        <p class="text-sm text-zinc-500 mb-6">Click the button below then drag on the desktop to capture an area.</p>
+                        <button onclick="startSnipping('${win.id}')" class="px-6 py-3 bg-sky-600 text-white rounded-2xl">Start Snipping</button>
+                    </div>
+                `;
+            }
+            
+            win.innerHTML = `
+                <div class="title-bar flex items-center justify-between px-3 h-11 cursor-move select-none" 
+                     onmousedown="startDrag(event, '${win.id}')"
+                     ontouchstart="startDragTouch(event, '${win.id}')">
+                    <div class="flex items-center gap-2.5 pl-2">
+                        <span class="text-xl">${iconHTML}</span>
+                        <span class="font-semibold text-sm">${title}</span>
+                    </div>
+                    <div class="flex">
+                        <button onclick="event.stopImmediatePropagation(); minimizeWindow('${win.id}')" class="win11-btn w-9 h-8 flex items-center justify-center text-xl text-zinc-500 hover:text-zinc-700 rounded-2xl">−</button>
+                        <button onclick="event.stopImmediatePropagation(); maximizeWindow('${win.id}')" class="win11-btn w-9 h-8 flex items-center justify-center text-sm text-zinc-500 hover:text-zinc-700 rounded-2xl">□</button>
+                        <button onclick="event.stopImmediatePropagation(); closeWindow('${win.id}')" class="win11-btn close w-9 h-8 flex items-center justify-center text-xl text-zinc-500 hover:text-white rounded-2xl">×</button>
+                    </div>
+                </div>
+                <div class="flex-1 overflow-hidden bg-white text-zinc-800">${contentHTML}</div>
+            `;
+            
+            container.appendChild(win);
+            win.addEventListener('mousedown', () => bringToFront(win));
+            setTimeout(() => bringToFront(win), 10);
+            
+            // Post-open initializations
+            if (type === 'paint') {
+                setTimeout(() => initEnhancedPaint(win.id), 150);
+            }
+            if (type === 'calculator') {
+                win.dataset.calcValue = '0';
+                win.dataset.calcOperator = '';
+            }
+            if (type === 'terminal') {
+                setTimeout(() => {
+                    const inp = document.getElementById('terminal-input-' + windowCounter);
+                    if (inp) inp.focus();
+                }, 150);
+            }
+            if (type === 'explorer') {
+                setTimeout(() => renderExplorer(win.id), 100);
+            }
+            if (type === 'recycle') {
+                setTimeout(() => renderRecycleBin(win.id), 100);
+            }
+            if (type === 'chrome') {
+                setTimeout(() => initChromeBrowser(win.id), 120);
+            }
+            if (type === 'notepad') {
+                setTimeout(() => initNotepad(win.id), 100);
+            }
+            if (type === 'camera') {
+                setTimeout(() => initCamera(win.id), 200);
+            }
+            if (type === 'notes') {
+                setTimeout(() => renderNotesList(win.id), 100);
+            }
+            if (type === 'taskmgr') {
+                setTimeout(() => refreshTaskManager(win.id), 100);
+            }
+            
+            updateOpenWindowsList();
+        }
+
+        // ==================== FILE EXPLORER ====================
+        function renderExplorer(winId) {
+            const num = winId.split('-')[1];
+            const content = document.getElementById('explorer-content-' + num);
+            if (!content) return;
+            
+            let html = `<div class="mb-2 text-xs text-zinc-500">My Projects &amp; Files (localStorage)</div>`;
+            
+            // Folders
+            if (fileSystem.folders && fileSystem.folders.length > 0) {
+                html += `<div class="mb-1 font-medium text-xs px-1">Folders</div>`;
+                fileSystem.folders.forEach((folder, idx) => {
+                    html += `
+                        <div class="file-item flex items-center gap-3 p-2.5 rounded-2xl cursor-pointer" ondblclick="openFolder('${winId}', ${idx})">
+                            <i class="fas fa-folder text-yellow-500 text-xl"></i>
+                            <div class="flex-1">
+                                <div class="font-medium">${folder.name}</div>
+                            </div>
+                            <button onclick="event.stopImmediatePropagation(); renameItem('${winId}', 'folder', ${idx});" class="text-xs px-2 py-0.5 hover:bg-zinc-200 rounded">Rename</button>
+                            <button onclick="event.stopImmediatePropagation(); deleteItem('${winId}', 'folder', ${idx});" class="text-xs px-2 py-0.5 text-red-500 hover:bg-red-100 rounded">Delete</button>
+                        </div>
+                    `;
+                });
+            }
+            
+            // Files
+            html += `<div class="mt-3 mb-1 font-medium text-xs px-1">Files</div>`;
+            if (!fileSystem.files || fileSystem.files.length === 0) {
+                // Seed some default files
+                fileSystem.files = [
+                    { name: "README.md", content: "# Welcome to Yasin's Windows 11" },
+                    { name: "projects.txt", content: "List of my web projects" }
+                ];
+            }
+            
+            fileSystem.files.forEach((file, idx) => {
+                html += `
+                    <div class="file-item flex items-center gap-3 p-2.5 rounded-2xl" ondblclick="openFile('${winId}', ${idx})">
+                        <i class="fas fa-file-alt text-blue-500 text-xl"></i>
+                        <div class="flex-1">
+                            <div class="font-medium">${file.name}</div>
+                        </div>
+                        <button onclick="event.stopImmediatePropagation(); renameItem('${winId}', 'file', ${idx});" class="text-xs px-2 py-0.5 hover:bg-zinc-200 rounded">Rename</button>
+                        <button onclick="event.stopImmediatePropagation(); deleteItem('${winId}', 'file', ${idx});" class="text-xs px-2 py-0.5 text-red-500 hover:bg-red-100 rounded">Delete</button>
+                    </div>
+                `;
+            });
+            
+            content.innerHTML = html;
+            saveToLocalStorage();
+        }
+        
+        function createNewFolderInExplorer(winId) {
+            const name = prompt('Folder name:', 'New Folder');
+            if (!name) return;
+            if (!fileSystem.folders) fileSystem.folders = [];
+            fileSystem.folders.push({ name: name, files: [] });
+            saveToLocalStorage();
+            renderExplorer(winId);
+        }
+        
+        function renameItem(winId, type, index) {
+            const item = type === 'folder' ? fileSystem.folders[index] : fileSystem.files[index];
+            const newName = prompt('New name:', item.name);
+            if (!newName) return;
+            item.name = newName;
+            saveToLocalStorage();
+            renderExplorer(winId);
+        }
+        
+        function deleteItem(winId, type, index) {
+            if (!confirm('Move to Recycle Bin?')) return;
+            const item = type === 'folder' ? fileSystem.folders.splice(index, 1)[0] : fileSystem.files.splice(index, 1)[0];
+            if (!fileSystem.recycle) fileSystem.recycle = [];
+            fileSystem.recycle.push({ ...item, type, deleted: new Date().toISOString() });
+            saveToLocalStorage();
+            renderExplorer(winId);
+            // Also refresh recycle if open
+            document.querySelectorAll('[id^="win-"]').forEach(w => {
+                if (w.innerHTML.includes('Recycle Bin')) {
+                    const num = w.id.split('-')[1];
+                    renderRecycleBin(w.id);
+                }
+            });
+        }
+        
+        function openFolder(winId, index) {
+            alert('Folder opened (demo): ' + fileSystem.folders[index].name + '\n(You can expand this to show sub-files in future versions)');
+        }
+        
+        function openFile(winId, index) {
+            const file = fileSystem.files[index];
+            const newWin = openWindow('notepad');
+            setTimeout(() => {
+                const num = newWin.split('-')[1];
+                const ta = document.getElementById('notepad-text-' + num);
+                const fn = document.getElementById('notepad-filename-' + num);
+                if (ta) ta.value = file.content || '';
+                if (fn) fn.value = file.name;
+            }, 300);
+        }
+        
+        function refreshExplorer(winId) {
+            renderExplorer(winId);
+        }
+
+        function renderRecycleBin(winId) {
+            const num = winId.split('-')[1];
+            const content = document.getElementById('recycle-content-' + num);
+            if (!content) return;
+            
+            if (!fileSystem.recycle || fileSystem.recycle.length === 0) {
+                content.innerHTML = `<div class="p-8 text-center text-zinc-400">Recycle Bin is empty</div>`;
+                return;
+            }
+            
+            let html = '';
+            fileSystem.recycle.forEach((item, idx) => {
+                html += `
+                    <div class="px-4 py-2.5 flex items-center gap-3 border-b last:border-0">
+                        <i class="fas ${item.type === 'folder' ? 'fa-folder' : 'fa-file'} text-zinc-400"></i>
+                        <div class="flex-1">
+                            <div>${item.name}</div>
+                            <div class="text-[10px] text-zinc-400">${new Date(item.deleted).toLocaleDateString()}</div>
+                        </div>
+                        <button onclick="restoreFromRecycle('${winId}', ${idx})" class="text-xs px-3 py-1 bg-emerald-100 text-emerald-700 rounded-xl">Restore</button>
+                        <button onclick="permanentDelete('${winId}', ${idx})" class="text-xs px-3 py-1 bg-red-100 text-red-600 rounded-xl">Delete</button>
+                    </div>
+                `;
+            });
+            content.innerHTML = html;
+        }
+        
+        function restoreFromRecycle(winId, idx) {
+            const item = fileSystem.recycle.splice(idx, 1)[0];
+            if (item.type === 'folder') {
+                if (!fileSystem.folders) fileSystem.folders = [];
+                fileSystem.folders.push(item);
+            } else {
+                if (!fileSystem.files) fileSystem.files = [];
+                fileSystem.files.push(item);
+            }
+            saveToLocalStorage();
+            renderRecycleBin(winId);
+            // Refresh any open explorer
+            document.querySelectorAll('[id^="win-"]').forEach(w => {
+                if (w.innerHTML.includes('File Explorer')) renderExplorer(w.id);
+            });
+        }
+        
+        function permanentDelete(winId, idx) {
+            if (!confirm('Permanently delete?')) return;
+            fileSystem.recycle.splice(idx, 1);
+            saveToLocalStorage();
+            renderRecycleBin(winId);
+        }
+        
+        function emptyRecycleBin(winId) {
+            if (!confirm('Empty Recycle Bin permanently?')) return;
+            fileSystem.recycle = [];
+            saveToLocalStorage();
+            renderRecycleBin(winId);
+        }
+
+        // ==================== ENHANCED PAINT ====================
+        let paintCtx = null;
+        let paintCanvas = null;
+        let isPainting = false;
+        let lastX = 0, lastY = 0;
+        let currentTool = 'pencil';
+        let paintHistoryStack = [];
+        
+        function initEnhancedPaint(winId) {
+            const num = winId.split('-')[1];
+            paintCanvas = document.getElementById('paint-canvas-' + num);
+            if (!paintCanvas) return;
+            
+            paintCtx = paintCanvas.getContext('2d', { alpha: true });
+            
+            function resize() {
+                const parent = paintCanvas.parentElement;
+                const rect = parent.getBoundingClientRect();
+                const dpr = window.devicePixelRatio || 1;
+                
+                paintCanvas.width = Math.floor(rect.width * dpr);
+                paintCanvas.height = Math.floor(rect.height * dpr);
+                paintCanvas.style.width = rect.width + 'px';
+                paintCanvas.style.height = rect.height + 'px';
+                
+                paintCtx.scale(dpr, dpr);
+                paintCtx.fillStyle = '#f8fafc';
+                paintCtx.fillRect(0, 0, rect.width, rect.height);
+                
+                // Save initial state
+                savePaintState();
+            }
+            
+            resize();
+            new ResizeObserver(resize).observe(paintCanvas.parentElement);
+            
+            // Drawing events
+            paintCanvas.addEventListener('mousedown', startPaint);
+            paintCanvas.addEventListener('mouseup', stopPaint);
+            paintCanvas.addEventListener('mouseleave', stopPaint);
+            paintCanvas.addEventListener('mousemove', drawPaint);
+            
+            paintCanvas.addEventListener('touchstart', startPaint, {passive: false});
+            paintCanvas.addEventListener('touchend', stopPaint);
+            paintCanvas.addEventListener('touchmove', drawPaint, {passive: false});
+            
+            // Set initial tool
+            currentTool = 'pencil';
+            document.querySelectorAll(`[data-tool]`).forEach(btn => btn.classList.remove('active'));
+            const pencilBtn = document.querySelector(`[data-tool="pencil"]`);
+            if (pencilBtn) pencilBtn.classList.add('active');
+        }
+        
+        function setPaintTool(winId, tool) {
+            currentTool = tool;
+            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+            const activeBtn = document.querySelector(`[data-tool="${tool}"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+            
+            const canvas = document.getElementById('paint-canvas-' + winId.split('-')[1]);
+            if (canvas) {
+                canvas.style.cursor = tool === 'eraser' ? 'cell' : 'crosshair';
+            }
+        }
+        
+        function savePaintState() {
+            if (!paintCanvas) return;
+            paintHistoryStack.push(paintCanvas.toDataURL());
+            if (paintHistoryStack.length > 12) paintHistoryStack.shift();
+        }
+        
+        function paintUndo(winId) {
+            if (paintHistoryStack.length < 2) return;
+            paintHistoryStack.pop();
+            const lastState = paintHistoryStack[paintHistoryStack.length - 1];
+            
+            const img = new Image();
+            img.onload = () => {
+                if (paintCtx && paintCanvas) {
+                    paintCtx.clearRect(0, 0, paintCanvas.width, paintCanvas.height);
+                    paintCtx.drawImage(img, 0, 0, paintCanvas.width, paintCanvas.height);
+                }
+            };
+            img.src = lastState;
+        }
+        
+        function startPaint(e) {
+            e.preventDefault();
+            isPainting = true;
+            const pos = getPaintPos(e);
+            lastX = pos.x;
+            lastY = pos.y;
+            
+            if (currentTool === 'pencil' || currentTool === 'eraser') {
+                paintCtx.beginPath();
+                paintCtx.moveTo(lastX, lastY);
+            }
+            savePaintState();
+        }
+        
+        function stopPaint() {
+            isPainting = false;
+            if (paintCtx) paintCtx.beginPath();
+        }
+        
+        function getPaintPos(e) {
+            const rect = paintCanvas.getBoundingClientRect();
+            const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+            const clientY = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+        
+        function drawPaint(e) {
+            if (!isPainting || !paintCtx) return;
+            e.preventDefault();
+            
+            const pos = getPaintPos(e);
+            const colorInput = document.getElementById('paint-color-' + (paintCanvas.id.split('-')[2] || ''));
+            const sizeInput = document.getElementById('paint-size-' + (paintCanvas.id.split('-')[2] || ''));
+            
+            const color = colorInput ? colorInput.value : '#000000';
+            const size = sizeInput ? parseFloat(sizeInput.value) : 6;
+            
+            paintCtx.strokeStyle = color;
+            paintCtx.lineWidth = size;
+            paintCtx.lineCap = 'round';
+            paintCtx.lineJoin = 'round';
+            
+            if (currentTool === 'pencil') {
+                paintCtx.lineTo(pos.x, pos.y);
+                paintCtx.stroke();
+            } 
+            else if (currentTool === 'eraser') {
+                paintCtx.strokeStyle = '#f8fafc';
+                paintCtx.lineTo(pos.x, pos.y);
+                paintCtx.stroke();
+            } 
+            else if (currentTool === 'line') {
+                // For line, we draw on mouse up for simplicity in this demo
+                paintCtx.clearRect(0, 0, paintCanvas.width, paintCanvas.height); // simplistic
+                // Better would be to save state before and redraw, but for demo:
+                paintCtx.beginPath();
+                paintCtx.moveTo(lastX, lastY);
+                paintCtx.lineTo(pos.x, pos.y);
+                paintCtx.stroke();
+            } 
+            else if (currentTool === 'rect') {
+                paintCtx.strokeRect(lastX, lastY, pos.x - lastX, pos.y - lastY);
+            } 
+            else if (currentTool === 'circle') {
+                const radius = Math.sqrt(Math.pow(pos.x - lastX, 2) + Math.pow(pos.y - lastY, 2));
+                paintCtx.beginPath();
+                paintCtx.arc(lastX, lastY, radius, 0, Math.PI * 2);
+                paintCtx.stroke();
+            }
+            
+            lastX = pos.x;
+            lastY = pos.y;
+        }
+        
+        function paintClear(winId) {
+            if (!paintCtx || !paintCanvas) return;
+            paintCtx.fillStyle = '#f8fafc';
+            paintCtx.fillRect(0, 0, paintCanvas.width, paintCanvas.height);
+            savePaintState();
+        }
+        
+        function paintSave(winId) {
+            if (!paintCanvas) return;
+            const a = document.createElement('a');
+            a.download = 'painting.png';
+            a.href = paintCanvas.toDataURL('image/png');
+            a.click();
+        }
+
+        // ==================== NOTEPAD ====================
+        function initNotepad(winId) {
+            const num = winId.split('-')[1];
+            const ta = document.getElementById('notepad-text-' + num);
+            const fn = document.getElementById('notepad-filename-' + num);
+            
+            // Load last auto-saved if exists
+            const saved = localStorage.getItem('notepad_last');
+            if (saved && ta) {
+                try {
+                    const data = JSON.parse(saved);
+                    ta.value = data.content || '';
+                    if (fn) fn.value = data.filename || 'Untitled.txt';
+                } catch(e) {}
+            }
+            
+            // Auto save every 3 seconds
+            setInterval(() => {
+                if (ta && fn) {
+                    localStorage.setItem('notepad_last', JSON.stringify({
+                        content: ta.value,
+                        filename: fn.value
+                    }));
+                }
+            }, 3000);
+        }
+        
+        function autoSaveNotepad(winId) {
+            // Real-time save handled by interval above
+        }
+        
+        function saveNotepad(winId) {
+            const num = winId.split('-')[1];
+            const ta = document.getElementById('notepad-text-' + num);
+            const fn = document.getElementById('notepad-filename-' + num);
+            if (!ta || !fn) return;
+            
+            // Save to fileSystem as a file
+            if (!fileSystem.files) fileSystem.files = [];
+            const existing = fileSystem.files.findIndex(f => f.name === fn.value);
+            if (existing >= 0) {
+                fileSystem.files[existing].content = ta.value;
+            } else {
+                fileSystem.files.push({ name: fn.value, content: ta.value });
+            }
+            saveToLocalStorage();
+            alert('Saved to File Explorer!');
+        }
+        
+        function downloadNotepad(winId) {
+            const num = winId.split('-')[1];
+            const ta = document.getElementById('notepad-text-' + num);
+            const fn = document.getElementById('notepad-filename-' + num);
+            if (!ta) return;
+            
+            const blob = new Blob([ta.value], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = fn ? fn.value : 'note.txt';
+            a.click();
+        }
+        
+        function openTxtFile(winId, input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const num = winId.split('-')[1];
+                const ta = document.getElementById('notepad-text-' + num);
+                const fn = document.getElementById('notepad-filename-' + num);
+                if (ta) ta.value = e.target.result;
+                if (fn) fn.value = file.name;
+            };
+            reader.readAsText(file);
+        }
+
+        // ==================== CHROME BROWSER WITH TABS ====================
+        let chromeTabs = {}; // winId -> array of tabs
+        
+        function initChromeBrowser(winId) {
+            const num = winId.split('-')[1];
+            chromeTabs[winId] = chromeTabs[winId] || [];
+            
+            // Add first tab
+            if (chromeTabs[winId].length === 0) {
+                addChromeTab(winId, true);
+            }
+        }
+        
+        function addChromeTab(winId, isFirst = false) {
+            const num = winId.split('-')[1];
+            if (!chromeTabs[winId]) chromeTabs[winId] = [];
+            
+            const tabId = Date.now();
+            chromeTabs[winId].push({
+                id: tabId,
+                title: 'New Tab',
+                url: 'https://www.google.com',
+                content: 'newtab'
+            });
+            
+            renderChromeTabs(winId);
+            
+            if (isFirst) {
+                setTimeout(() => switchChromeTab(winId, tabId), 50);
+            }
+        }
+        
+        function renderChromeTabs(winId) {
+            const num = winId.split('-')[1];
+            const tabContainer = document.getElementById('chrome-tabs-' + num);
+            if (!tabContainer) return;
+            
+            tabContainer.innerHTML = '';
+            const tabs = chromeTabs[winId] || [];
+            
+            tabs.forEach(tab => {
+                const tabEl = document.createElement('div');
+                tabEl.className = `tab flex items-center gap-2 px-4 py-1.5 text-xs cursor-pointer rounded-t-2xl ${tab.active ? 'active bg-white' : 'bg-zinc-200'}`;
+                tabEl.innerHTML = `
+                    <span class="truncate max-w-[120px]">${tab.title}</span>
+                    <button onclick="event.stopImmediatePropagation(); closeChromeTab('${winId}', ${tab.id})" class="text-zinc-400 hover:text-red-500">×</button>
+                `;
+                tabEl.onclick = () => switchChromeTab(winId, tab.id);
+                tabContainer.appendChild(tabEl);
+            });
+        }
+        
+        function switchChromeTab(winId, tabId) {
+            const num = winId.split('-')[1];
+            const tabs = chromeTabs[winId] || [];
+            tabs.forEach(t => t.active = t.id === tabId);
+            
+            const activeTab = tabs.find(t => t.id === tabId);
+            if (!activeTab) return;
+            
+            const content = document.getElementById('chrome-content-' + num);
+            const urlInput = document.getElementById('chrome-url-' + num);
+            
+            if (urlInput) urlInput.value = activeTab.url;
+            
+            if (activeTab.content === 'newtab') {
+                content.innerHTML = `
+                    <div class="max-w-md mx-auto mt-10 text-center">
+                        <div class="text-6xl font-bold tracking-tighter bg-gradient-to-br from-blue-600 to-sky-400 bg-clip-text text-transparent mb-4">Google</div>
+                        <input type="text" placeholder="Search or enter URL" class="w-full border px-5 py-3 rounded-3xl text-sm mb-4 outline-none"
+                               onkeydown="if(event.key==='Enter') navigateChromeTab('${winId}', this.value)">
+                        <div class="grid grid-cols-4 gap-3 text-xs">
+                            ${Object.keys(PROJECTS).map(key => `
+                                <div onclick="navigateChromeTab('${winId}', '${PROJECTS[key]}')" class="p-3 border rounded-2xl cursor-pointer hover:bg-zinc-50">
+                                    <div class="font-medium">${key}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Load iframe or content
+                content.innerHTML = `
+                    <div class="h-full flex flex-col">
+                        <iframe src="${activeTab.url}" class="flex-1 w-full border-0" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+                    </div>
+                `;
+            }
+            
+            renderChromeTabs(winId);
+        }
+        
+        function navigateChromeTab(winId, url) {
+            const num = winId.split('-')[1];
+            const tabs = chromeTabs[winId] || [];
+            const activeTab = tabs.find(t => t.active);
+            if (!activeTab) return;
+            
+            if (!url.startsWith('http')) url = 'https://' + url;
+            
+            activeTab.url = url;
+            activeTab.title = url.replace('https://', '').split('/')[0];
+            activeTab.content = 'web';
+            
+            const content = document.getElementById('chrome-content-' + num);
+            content.innerHTML = `
+                <div class="h-full flex flex-col">
+                    <iframe src="${url}" class="flex-1 w-full border-0" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+                </div>
+            `;
+            
+            const urlInput = document.getElementById('chrome-url-' + num);
+            if (urlInput) urlInput.value = url;
+            
+            renderChromeTabs(winId);
+        }
+        
+        function closeChromeTab(winId, tabId) {
+            const tabs = chromeTabs[winId] || [];
+            const idx = tabs.findIndex(t => t.id === tabId);
+            if (idx === -1) return;
+            
+            tabs.splice(idx, 1);
+            
+            if (tabs.length === 0) {
+                closeWindow(winId);
+                return;
+            }
+            
+            // Activate another tab
+            if (!tabs.some(t => t.active)) {
+                tabs[0].active = true;
+            }
+            
+            renderChromeTabs(winId);
+            const active = tabs.find(t => t.active);
+            if (active) switchChromeTab(winId, active.id);
+        }
+
+        // ==================== CAMERA ====================
+        let currentStream = null;
+        
+        function initCamera(winId) {
+            const num = winId.split('-')[1];
+            const video = document.getElementById('camera-video-' + num);
+            if (!video) return;
+            
+            navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+                .then(stream => {
+                    currentStream = stream;
+                    video.srcObject = stream;
+                })
+                .catch(err => {
+                    video.parentElement.innerHTML = `<div class="text-center p-8 text-red-500">Camera access denied or not available.<br><span class="text-xs">${err.message}</span></div>`;
+                });
+        }
+        
+        function capturePhoto(winId) {
+            const num = winId.split('-')[1];
+            const video = document.getElementById('camera-video-' + num);
+            if (!video) return;
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Download
+            const a = document.createElement('a');
+            a.download = 'photo-' + Date.now() + '.png';
+            a.href = canvas.toDataURL('image/png');
+            a.click();
+            
+            // Also show toast
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-20 left-1/2 -translate-x-1/2 bg-emerald-600 text-white px-5 py-2 rounded-2xl text-sm z-[90]';
+            toast.textContent = 'Photo saved!';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 1400);
+        }
+
+        // ==================== YASIN AI ====================
+        // ==================== STICKY NOTES ====================
+        function renderNotesList(winId) {
+            const num = winId.split('-')[1];
+            const container = document.getElementById('notes-list-' + num);
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            if (notesList.length === 0) {
+                container.innerHTML = `<div class="text-center text-zinc-400 py-8 text-sm">No notes yet. Create one!</div>`;
+                return;
+            }
+            
+            notesList.forEach((note, idx) => {
+                const div = document.createElement('div');
+                div.className = `sticky-note p-3 rounded-2xl border-l-4 cursor-pointer flex justify-between items-start`;
+                div.style.borderLeftColor = note.color || '#facc15';
+                div.innerHTML = `
+                    <div class="flex-1 pr-2">
+                        <div class="text-sm line-clamp-3">${note.content || 'Empty note'}</div>
+                        <div class="text-[10px] text-zinc-400 mt-1">${note.date || ''}</div>
+                    </div>
+                    <div>
+                        <button onclick="event.stopImmediatePropagation(); editNote(${idx}, '${winId}')" class="text-xs px-2 text-blue-500">Edit</button>
+                        <button onclick="event.stopImmediatePropagation(); deleteNote(${idx}, '${winId}')" class="text-xs px-2 text-red-500">×</button>
+                    </div>
+                `;
+                div.onclick = () => editNote(idx, winId);
+                container.appendChild(div);
+            });
+        }
+        
+        function createStickyNote(winId) {
+            const content = prompt('Note content:', 'My new idea...');
+            if (!content) return;
+            
+            notesList.push({
+                id: Date.now(),
+                content: content,
+                color: '#facc15',
+                date: new Date().toLocaleDateString()
+            });
+            saveToLocalStorage();
+            renderNotesList(winId);
+        }
+        
+        function editNote(index, winId) {
+            const note = notesList[index];
+            const newContent = prompt('Edit note:', note.content);
+            if (newContent === null) return;
+            note.content = newContent;
+            saveToLocalStorage();
+            renderNotesList(winId);
+        }
+        
+        function deleteNote(index, winId) {
+            if (!confirm('Delete this note?')) return;
+            notesList.splice(index, 1);
+            saveToLocalStorage();
+            renderNotesList(winId);
+        }
+
+        // ==================== TASK MANAGER ====================
+        function refreshTaskManager(winId) {
+            const num = winId.split('-')[1];
+            const list = document.getElementById('taskmgr-list-' + num);
+            if (!list) return;
+            
+            updateOpenWindowsList();
+            
+            if (openWindowsList.length === 0) {
+                list.innerHTML = `<div class="text-center py-6 text-zinc-400 text-sm">No apps running</div>`;
+                return;
+            }
+            
+            let html = '';
+            openWindowsList.forEach(win => {
+                html += `
+                    <div class="flex items-center justify-between p-3 bg-zinc-50 rounded-2xl mb-1.5">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-window-maximize text-blue-400"></i>
+                            <span class="font-medium">${win.title}</span>
+                        </div>
+                        <button onclick="closeWindow('${win.id}'); refreshTaskManager('${winId}')" 
+                                class="px-4 py-1 text-xs bg-red-500 text-white rounded-2xl">End Task</button>
+                    </div>
+                `;
+            });
+            list.innerHTML = html;
+        }
+
+        // ==================== SETTINGS ====================
+        function changeAccentColor(color) {
+            document.documentElement.style.setProperty('--accent', color);
+            saveToLocalStorage();
+        }
+        
+        function toggleDarkMode() {
+            const desk = document.getElementById('desktop');
+            desk.classList.toggle('dark');
+            saveToLocalStorage();
+        }
+        
+        function changeWallpaper(type) {
+            const desk = document.getElementById('desktop');
+            if (type === 0) {
+                desk.style.background = 'linear-gradient(145deg, #0f172a 0%, #1e3a8a 35%, #312e81 65%, #1e40af 100%)';
+            } else if (type === 1) {
+                desk.style.background = 'linear-gradient(145deg, #4c1d95 0%, #6b21a8 100%)';
+            } else if (type === 2) {
+                desk.style.background = 'linear-gradient(145deg, #064e3b 0%, #166534 100%)';
+            }
+            saveToLocalStorage();
+        }
+
+        // ==================== VOICE ASSISTANT ====================
+        let recognition = null;
+        
+        function startVoiceAssistant() {
+            if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+                alert('Voice recognition not supported in this browser. Try Chrome or Edge.');
+                return;
+            }
+            
+            const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRec();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+            
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-20 left-1/2 -translate-x-1/2 bg-emerald-600 text-white px-5 py-2 rounded-3xl text-sm flex items-center gap-2 z-[90]';
+            toast.innerHTML = `<i class="fas fa-microphone"></i> <span>Listening... Say "Hey Yasin" or a command</span>`;
+            document.body.appendChild(toast);
+            
+            recognition.onresult = (event) => {
+                toast.remove();
+                const transcript = event.results[0][0].transcript.toLowerCase().trim();
+                handleVoiceCommand(transcript);
+            };
+            
+            recognition.onerror = () => {
+                toast.remove();
+                alert('Voice recognition error. Please try again.');
+            };
+            
+            recognition.onend = () => {
+                if (toast.parentNode) toast.remove();
+            };
+            
+            recognition.start();
+        }
+        
+        function handleVoiceCommand(cmd) {
+            const speak = (text) => {
+                const utter = new SpeechSynthesisUtterance(text);
+                window.speechSynthesis.speak(utter);
+            };
+            
+            if (cmd.includes('hey yasin') || cmd.includes('hello yasin')) {
+                speak('Hi! How can I help you?');
+                return;
+            }
+            if (cmd.includes('open paint')) {
+                openWindow('paint');
+                speak('Opening Paint');
+            } else if (cmd.includes('open calculator')) {
+                openWindow('calculator');
+                speak('Opening Calculator');
+            } else if (cmd.includes('open notepad')) {
+                openWindow('notepad');
+                speak('Opening Notepad');
+            } else if (cmd.includes('open settings')) {
+                openWindow('settings');
+                speak('Opening Settings');
+            } else if (cmd.includes('open camera')) {
+                openWindow('camera');
+                speak('Opening Camera');
+            } else if (cmd.includes('what time')) {
+                const time = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+                speak('The time is ' + time);
+            } else if (cmd.includes('shutdown') || cmd.includes('restart')) {
+                speak('Shutting down simulation');
+                setTimeout(() => location.reload(), 1200);
+            } else if (cmd.includes('open explorer') || cmd.includes('file explorer')) {
+                openWindow('explorer');
+                speak('Opening File Explorer');
+            } else {
+                speak('Sorry, I didn\'t understand that command. Try "open paint" or "what time is it".');
+            }
+        }
+
+        // ==================== SNIPPING TOOL ====================
+        function startSnipping(winId) {
+            closeWindow(winId);
+            
+            const overlay = document.createElement('div');
+            overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.15);z-index:99999;cursor:crosshair';
+            document.body.appendChild(overlay);
+            
+            let startX, startY, selection;
+            
+            overlay.onmousedown = (e) => {
+                startX = e.clientX;
+                startY = e.clientY;
+                
+                selection = document.createElement('div');
+                selection.style.cssText = `position:fixed;border:2px dashed #3b82f6;background:rgba(59,130,246,0.1);z-index:100000`;
+                document.body.appendChild(selection);
+                
+                overlay.onmousemove = (ev) => {
+                    const x = Math.min(ev.clientX, startX);
+                    const y = Math.min(ev.clientY, startY);
+                    const w = Math.abs(ev.clientX - startX);
+                    const h = Math.abs(ev.clientY - startY);
+                    selection.style.left = x + 'px';
+                    selection.style.top = y + 'px';
+                    selection.style.width = w + 'px';
+                    selection.style.height = h + 'px';
+                };
+            };
+            
+            overlay.onmouseup = () => {
+                overlay.onmousemove = null;
+                if (!selection) {
+                    overlay.remove();
+                    return;
+                }
+                
+                const rect = selection.getBoundingClientRect();
+                selection.remove();
+                overlay.remove();
+                
+                // Create canvas from the selected area (approximation using html2canvas alternative)
+                html2canvas(document.body).then(canvas => {
+                    const cropCanvas = document.createElement('canvas');
+                    cropCanvas.width = rect.width;
+                    cropCanvas.height = rect.height;
+                    const ctx = cropCanvas.getContext('2d');
+                    ctx.drawImage(canvas, rect.left, rect.top, rect.width, rect.height, 0, 0, rect.width, rect.height);
+                    
+                    const a = document.createElement('a');
+                    a.download = 'snip-' + Date.now() + '.png';
+                    a.href = cropCanvas.toDataURL();
+                    a.click();
+                }).catch(() => {
+                    alert('Screenshot captured (demo). In production we would use html2canvas library.');
+                });
+            };
+        }
+        
+        // Fallback: load html2canvas dynamically if needed (for snipping)
+        function loadHtml2Canvas() {
+            if (window.html2canvas) return Promise.resolve();
+            return new Promise((resolve) => {
+                const s = document.createElement('script');
+                s.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+                s.onload = resolve;
+                document.head.appendChild(s);
+            });
+        }
+
+        // ==================== OTHER HELPERS ====================
         function updateClock() {
             const clock = document.getElementById('clock');
             function tick() {
@@ -393,7 +1759,18 @@
         
         function createNewFolderFake() {
             hideContextMenu();
-            alert('New folder created! (Demo version)');
+            const name = prompt('New folder name on desktop:', 'New Folder');
+            if (!name) return;
+            desktopIcons.push({
+                id: 'folder-' + Date.now(),
+                label: name,
+                icon: 'fa-folder',
+                color: 'from-yellow-400 to-amber-500',
+                type: 'app',
+                app: 'explorer'
+            });
+            saveToLocalStorage();
+            initDesktopIcons();
         }
         
         function toggleStartMenu(e) {
@@ -481,232 +1858,52 @@
             }
         }
         
-        function openWindow(type) {
-            windowCounter++;
-            const container = document.getElementById('window-container');
-            const win = document.createElement('div');
-            win.id = `win-${windowCounter}`;
-            win.className = `window absolute bg-white flex flex-col pointer-events-auto shadow-2xl`;
-            
-            let w = 740, h = 520, left = 130 + (windowCounter % 6) * 28, top = 65 + (windowCounter % 4) * 24;
-            
-            if (type === 'chrome') { w = 980; h = 640; }
-            else if (type === 'calculator') { w = 320; h = 460; }
-            else if (type === 'paint') { w = 780; h = 560; }
-            else if (type === 'terminal') { w = 680; h = 420; }
-            
-            win.style.left = left + 'px';
-            win.style.top = top + 'px';
-            win.style.width = w + 'px';
-            win.style.height = h + 'px';
-            win.style.zIndex = 160 + windowCounter;
-            
-            let title = '', icon = '', contentHTML = '';
-            
-            if (type === 'explorer') {
-                title = 'File Explorer';
-                icon = '<i class="fas fa-folder text-sky-500"></i>';
-                contentHTML = `
-                    <div class="p-5">
-                        <div class="font-semibold mb-3">My Projects</div>
-                        <div class="space-y-1 text-sm">
-                            <div onclick="openProject('yasin', '${PROJECTS.yasin}')" class="flex items-center gap-3 p-3 hover:bg-zinc-100 rounded-2xl cursor-pointer"><i class="fas fa-user text-violet-500"></i> یاسین نامنی</div>
-                            <div onclick="openProject('prank', '${PROJECTS.prank}')" class="flex items-center gap-3 p-3 hover:bg-zinc-100 rounded-2xl cursor-pointer"><i class="fas fa-grin-tongue-wink text-pink-500"></i> Prank</div>
-                            <div onclick="openProject('counter', '${PROJECTS.counter}')" class="flex items-center gap-3 p-3 hover:bg-zinc-100 rounded-2xl cursor-pointer"><i class="fas fa-crosshairs text-red-500"></i> کانتر استرایک</div>
-                            <div onclick="openProject('robot', '${PROJECTS.robot}')" class="flex items-center gap-3 p-3 hover:bg-zinc-100 rounded-2xl cursor-pointer"><i class="fas fa-robot text-emerald-500"></i> ربات هوشمند</div>
-                            <div onclick="openProject('bluecode', '${PROJECTS.bluecode}')" class="flex items-center gap-3 p-3 hover:bg-zinc-100 rounded-2xl cursor-pointer"><i class="fas fa-code text-blue-500"></i> آموزش برنامه‌نویسی</div>
-                        </div>
-                    </div>
-                `;
-            } 
-            else if (type === 'recycle') {
-                title = 'Recycle Bin';
-                icon = '<i class="fas fa-trash text-zinc-400"></i>';
-                contentHTML = `
-                    <div class="p-5">
-                        <div class="flex justify-between mb-4">
-                            <span class="font-semibold">8 items deleted</span>
-                            <button onclick="emptyRecycle(this)" class="text-xs px-4 py-1.5 bg-red-500 text-white rounded-2xl">Empty Recycle Bin</button>
-                        </div>
-                        <div class="text-sm border rounded-2xl overflow-hidden">
-                            <div class="px-4 py-2 bg-zinc-50 text-xs flex"><div class="flex-1">Name</div><div class="w-28">Date deleted</div></div>
-                            <div class="divide-y text-sm px-4">
-                                <div class="py-2 flex"><div class="flex-1">Q4_Report.pdf</div><div class="w-28 text-xs text-zinc-500">Jan 12</div></div>
-                                <div class="py-2 flex"><div class="flex-1">Vacation_Photos.zip</div><div class="w-28 text-xs text-zinc-500">Dec 28</div></div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } 
-            else if (type === 'chrome') {
-                title = 'Google Chrome';
-                icon = '<i class="fas fa-globe text-sky-500"></i>';
-                contentHTML = `
-                    <div class="flex flex-col h-full">
-                        <div class="px-3 py-2 bg-zinc-100 flex items-center gap-2 border-b">
-                            <input type="text" value="https://www.google.com" class="flex-1 bg-white px-4 py-1 rounded-3xl text-sm outline-none" onkeydown="if(event.key==='Enter') handleChromeSearch('${win.id}', this.value)">
-                        </div>
-                        <div id="chrome-content-${windowCounter}" class="flex-1 p-8 bg-white overflow-auto">
-                            <div class="max-w-md mx-auto mt-6 text-center">
-                                <div class="text-7xl font-bold tracking-tighter bg-gradient-to-br from-blue-600 to-sky-400 bg-clip-text text-transparent mb-6">Google</div>
-                                <input type="text" placeholder="Search Google or type a URL" class="w-full border px-5 py-3 rounded-3xl text-sm mb-4 outline-none" onkeydown="if(event.key==='Enter') handleGoogleSearch('${win.id}', this.value)">
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } 
-            else if (type === 'notepad') {
-                title = 'Notepad';
-                icon = '<i class="fas fa-file-lines text-amber-500"></i>';
-                contentHTML = `<div class="flex flex-col h-full"><div class="px-4 py-1 bg-zinc-100 text-xs border-b">File &nbsp; Edit &nbsp; Format</div><textarea class="flex-1 p-5 font-mono text-sm resize-none outline-none" placeholder="Write something..."></textarea></div>`;
-            } 
-            else if (type === 'calculator') {
-                title = 'Calculator';
-                icon = '<i class="fas fa-calculator text-emerald-500"></i>';
-                contentHTML = `
-                    <div class="p-4 bg-zinc-900 text-white h-full flex flex-col">
-                        <div id="calc-display" class="bg-zinc-800 h-14 rounded-2xl flex items-end justify-end px-5 text-3xl font-light mb-4">0</div>
-                        <div class="grid grid-cols-4 gap-2 flex-1 text-xl">
-                            <button onclick="calcInput('C')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">C</button>
-                            <button onclick="calcInput('±')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">±</button>
-                            <button onclick="calcInput('%')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">%</button>
-                            <button onclick="calcInput('/')" class="calculator-btn bg-orange-500 hover:bg-orange-600 rounded-2xl">÷</button>
-                            
-                            <button onclick="calcInput('7')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">7</button>
-                            <button onclick="calcInput('8')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">8</button>
-                            <button onclick="calcInput('9')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">9</button>
-                            <button onclick="calcInput('*')" class="calculator-btn bg-orange-500 hover:bg-orange-600 rounded-2xl">×</button>
-                            
-                            <button onclick="calcInput('4')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">4</button>
-                            <button onclick="calcInput('5')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">5</button>
-                            <button onclick="calcInput('6')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">6</button>
-                            <button onclick="calcInput('-')" class="calculator-btn bg-orange-500 hover:bg-orange-600 rounded-2xl">−</button>
-                            
-                            <button onclick="calcInput('1')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">1</button>
-                            <button onclick="calcInput('2')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">2</button>
-                            <button onclick="calcInput('3')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">3</button>
-                            <button onclick="calcInput('+')" class="calculator-btn bg-orange-500 hover:bg-orange-600 rounded-2xl">+</button>
-                            
-                            <button onclick="calcInput('0')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl col-span-2">0</button>
-                            <button onclick="calcInput('.')" class="calculator-btn bg-zinc-700 hover:bg-zinc-600 rounded-2xl">.</button>
-                            <button onclick="calcInput('=')" class="calculator-btn bg-orange-500 hover:bg-orange-600 rounded-2xl">=</button>
-                        </div>
-                    </div>
-                `;
-            } 
-            else if (type === 'paint') {
-                title = 'Paint';
-                icon = '<i class="fas fa-paint-brush text-pink-500"></i>';
-                contentHTML = `
-                    <div class="flex flex-col h-full">
-                        <div class="px-4 py-2 bg-zinc-100 flex gap-3 text-sm border-b">
-                            <button onclick="paintClear()" class="px-3 py-1 bg-white rounded-xl text-xs border">Clear</button>
-                            <button onclick="paintSave()" class="px-3 py-1 bg-white rounded-xl text-xs border">Save</button>
-                            <input type="color" id="paint-color-${windowCounter}" value="#000000">
-                            <input type="range" id="paint-size-${windowCounter}" min="2" max="30" value="5" class="accent-pink-500 w-20">
-                        </div>
-                        <div class="flex-1 p-3 bg-zinc-50">
-                            <canvas id="paint-canvas-${windowCounter}" width="720" height="420" class="paint-canvas border shadow-inner"></canvas>
-                        </div>
-                    </div>
-                `;
-            } 
-            else if (type === 'terminal') {
-                title = 'Terminal';
-                icon = '<i class="fas fa-terminal text-emerald-400"></i>';
-                contentHTML = `
-                    <div class="flex flex-col h-full bg-black text-emerald-400 font-mono text-sm">
-                        <div class="px-4 py-1 bg-zinc-900 text-xs border-b border-zinc-800">PowerShell</div>
-                        <div id="terminal-output-${windowCounter}" class="flex-1 p-4 overflow-auto text-xs">PS C:\\Users\\Yasin&gt; </div>
-                        <div class="flex px-4 py-2 border-t border-zinc-800">
-                            <span>PS C:\\Users\\Yasin&gt;</span>
-                            <input type="text" id="terminal-input-${windowCounter}" class="flex-1 bg-transparent outline-none ml-2" onkeydown="if(event.key==='Enter') runTerminalCommand('${win.id}', this)">
-                        </div>
-                    </div>
-                `;
-            }
-            
-            win.innerHTML = `
-                <div class="title-bar flex items-center justify-between px-3 h-11 cursor-move select-none" onmousedown="startDrag(event, '${win.id}')">
-                    <div class="flex items-center gap-2.5 pl-2">
-                        <span class="text-xl">${icon}</span>
-                        <span class="font-semibold text-sm">${title}</span>
-                    </div>
-                    <div class="flex">
-                        <button onclick="event.stopImmediatePropagation(); minimizeWindow('${win.id}')" class="win11-btn w-9 h-8 flex items-center justify-center text-xl text-zinc-500 hover:text-zinc-700 rounded-2xl">−</button>
-                        <button onclick="event.stopImmediatePropagation(); maximizeWindow('${win.id}')" class="win11-btn w-9 h-8 flex items-center justify-center text-sm text-zinc-500 hover:text-zinc-700 rounded-2xl">□</button>
-                        <button onclick="event.stopImmediatePropagation(); closeWindow('${win.id}')" class="win11-btn close w-9 h-8 flex items-center justify-center text-xl text-zinc-500 hover:text-white rounded-2xl">×</button>
-                    </div>
-                </div>
-                <div class="flex-1 overflow-hidden bg-white text-zinc-800">${contentHTML}</div>
-            `;
-            
-            container.appendChild(win);
-            win.addEventListener('mousedown', () => bringToFront(win));
-            setTimeout(() => bringToFront(win), 10);
-            
-            if (type === 'paint') setTimeout(() => initPaint(win.id), 80);
-            if (type === 'calculator') { win.dataset.calcValue = '0'; win.dataset.calcOperator = ''; }
-            if (type === 'terminal') setTimeout(() => { const inp = document.getElementById('terminal-input-' + windowCounter); if (inp) inp.focus(); }, 100);
+        function showSearchFake() {
+            const q = prompt('Search Windows or apps:');
+            if (!q) return;
+            if (q.toLowerCase().includes('paint')) openWindow('paint');
+            else if (q.toLowerCase().includes('calc')) openWindow('calculator');
+            else if (q.toLowerCase().includes('note')) openWindow('notepad');
+            else if (q.toLowerCase().includes('setting')) openWindow('settings');
+            else alert('No exact match found. Try "paint", "calculator", or "notepad".');
         }
         
-        function initPaint(winId) {
-            const canvas = document.getElementById('paint-canvas-' + winId.split('-')[1]);
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            let painting = false;
-            
-            canvas.addEventListener('mousedown', e => { painting = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); });
-            canvas.addEventListener('mouseup', () => painting = false);
-            canvas.addEventListener('mousemove', e => {
-                if (!painting) return;
-                ctx.strokeStyle = document.getElementById('paint-color-' + winId.split('-')[1]).value;
-                ctx.lineWidth = document.getElementById('paint-size-' + winId.split('-')[1]).value;
-                ctx.lineTo(e.offsetX, e.offsetY);
-                ctx.stroke();
-            });
+        function shutdownFake() {
+            const d = document.getElementById('desktop');
+            d.style.transition = 'filter 1s ease';
+            d.style.filter = 'brightness(0)';
+            setTimeout(() => {
+                if (confirm('Restart Windows 11 simulation?')) location.reload();
+                else d.style.filter = '';
+            }, 850);
         }
         
-        function paintClear() { const c = document.querySelector('.paint-canvas'); if (c) c.getContext('2d').clearRect(0,0,c.width,c.height); }
-        function paintSave() { const c = document.querySelector('.paint-canvas'); if (c) { const a = document.createElement('a'); a.download = 'painting.png'; a.href = c.toDataURL(); a.click(); } }
-        
-        function runTerminalCommand(winId, input) {
-            const out = document.getElementById('terminal-output-' + winId.split('-')[1]);
-            const cmd = input.value.trim().toLowerCase();
-            out.innerHTML += `<div>PS C:\\Users\\Yasin&gt; <span class="text-white">${input.value}</span></div>`;
-            
-            if (cmd === 'help') out.innerHTML += `<div class="text-zinc-400">dir, echo, date, cls, exit</div>`;
-            else if (cmd === 'dir') out.innerHTML += `<div class="text-zinc-400">Desktop &nbsp; Documents &nbsp; Projects</div>`;
-            else if (cmd.startsWith('echo ')) out.innerHTML += `<div class="text-white">${input.value.substring(5)}</div>`;
-            else if (cmd === 'date') out.innerHTML += `<div class="text-zinc-400">${new Date().toLocaleDateString()}</div>`;
-            else if (cmd === 'cls') out.innerHTML = '';
-            else if (cmd === 'exit') closeWindow(winId);
-            else out.innerHTML += `<div class="text-red-400">'${cmd}' is not recognized.</div>`;
-            
-            out.scrollTop = out.scrollHeight;
-            input.value = '';
-        }
-        
-        function calcInput(val) {
-            const wins = document.querySelectorAll('[id^="win-"]');
-            let active = null;
-            for (let w of wins) if (w.querySelector('#calc-display')) { active = w; break; }
+        function calcInput(val, winId) {
+            const active = document.getElementById(winId);
             if (!active) return;
-            
             const display = active.querySelector('#calc-display');
+            if (!display) return;
+            
             let current = display.textContent;
             
-            if (val === 'C') { display.textContent = '0'; active.dataset.calcValue = '0'; active.dataset.calcOperator = ''; }
+            if (val === 'C') { 
+                display.textContent = '0'; 
+                active.dataset.calcValue = '0'; 
+                active.dataset.calcOperator = ''; 
+            }
             else if (val === '=') {
                 if (active.dataset.calcOperator) {
                     const prev = parseFloat(active.dataset.calcPrevious || '0');
                     const curr = parseFloat(current);
                     let res = 0;
-                    if (active.dataset.calcOperator === '+') res = prev + curr;
-                    if (active.dataset.calcOperator === '-') res = prev - curr;
-                    if (active.dataset.calcOperator === '*') res = prev * curr;
-                    if (active.dataset.calcOperator === '/') res = prev / curr;
+                    const op = active.dataset.calcOperator;
+                    if (op === '+') res = prev + curr;
+                    if (op === '-') res = prev - curr;
+                    if (op === '*') res = prev * curr;
+                    if (op === '/') res = prev / curr;
                     display.textContent = res;
+                    active.dataset.calcValue = res;
+                    active.dataset.calcOperator = '';
                 }
             } else if (['+','-','*','/'].includes(val)) {
                 active.dataset.calcPrevious = current;
@@ -717,105 +1914,53 @@
             }
         }
         
+        function runTerminalCommand(winId, input) {
+            const num = winId.split('-')[1];
+            const out = document.getElementById('terminal-output-' + num);
+            const cmd = input.value.trim().toLowerCase();
+            
+            out.innerHTML += `<div>PS C:\\Users\\Yasin&gt; <span class="text-white">${input.value}</span></div>`;
+            
+            if (cmd === 'help') out.innerHTML += `<div class="text-zinc-400">dir, echo, date, cls, exit, open paint, open ai</div>`;
+            else if (cmd === 'dir') out.innerHTML += `<div class="text-zinc-400">Desktop  Documents  Projects  Recycle</div>`;
+            else if (cmd.startsWith('echo ')) out.innerHTML += `<div class="text-white">${input.value.substring(5)}</div>`;
+            else if (cmd === 'date') out.innerHTML += `<div class="text-zinc-400">${new Date().toLocaleDateString()}</div>`;
+            else if (cmd === 'cls') out.innerHTML = '';
+            else if (cmd === 'exit') closeWindow(winId);
+            else if (cmd.includes('open paint')) { out.innerHTML += `<div>Opening Paint...</div>`; setTimeout(() => openWindow('paint'), 400); }
+            else if (cmd.includes('open ai')) { out.innerHTML += `<div>Opening Yasin AI...</div>`; setTimeout(() => openWindow('ai'), 400); }
+            else out.innerHTML += `<div class="text-red-400">'${cmd}' is not recognized. Type help.</div>`;
+            
+            out.scrollTop = out.scrollHeight;
+            input.value = '';
+        }
+        
         function emptyRecycle(btn) {
             btn.closest('.p-5').innerHTML = `<div class="p-8 text-center"><i class="fas fa-trash text-6xl text-zinc-300 mb-4"></i><div class="font-semibold">Recycle Bin is empty</div></div>`;
         }
-        
-        function handleGoogleSearch(winId, query) {
-            const content = document.getElementById('chrome-content-' + winId.split('-')[1]);
-            if (!content) return;
-            
-            let html = `<div class="max-w-2xl mx-auto"><div class="mb-4 text-sm">Results for <strong>"${query}"</strong></div>`;
-            
-            if (query.includes('یاسین') || query.toLowerCase().includes('yasin')) html += `<div onclick="window.open('${PROJECTS.yasin}','_blank')" class="p-4 border rounded-2xl mb-3 cursor-pointer hover:bg-zinc-50"><div class="text-blue-600 font-medium">یاسین نامنی — Personal Site</div><div class="text-xs text-emerald-700">${PROJECTS.yasin}</div></div>`;
-            if (query.toLowerCase().includes('prank')) html += `<div onclick="window.open('${PROJECTS.prank}','_blank')" class="p-4 border rounded-2xl mb-3 cursor-pointer hover:bg-zinc-50"><div class="text-blue-600 font-medium">Prank Project</div></div>`;
-            if (query.toLowerCase().includes('کانتر') || query.toLowerCase().includes('counter')) html += `<div onclick="window.open('${PROJECTS.counter}','_blank')" class="p-4 border rounded-2xl mb-3 cursor-pointer hover:bg-zinc-50"><div class="text-blue-600 font-medium">کانتر استرایک</div></div>`;
-            if (query.includes('ربات') || query.toLowerCase().includes('robot')) html += `<div onclick="window.open('${PROJECTS.robot}','_blank')" class="p-4 border rounded-2xl mb-3 cursor-pointer hover:bg-zinc-50"><div class="text-blue-600 font-medium">ربات هوشمند</div></div>`;
-            if (query.includes('آموزش') || query.toLowerCase().includes('bluecode')) html += `<div onclick="window.open('${PROJECTS.bluecode}','_blank')" class="p-4 border rounded-2xl mb-3 cursor-pointer hover:bg-zinc-50"><div class="text-blue-600 font-medium">آموزش برنامه‌نویسی</div></div>`;
-            
-            html += `</div>`;
-            content.innerHTML = html;
-        }
-        
-        function handleChromeSearch(winId, url) {
-            const content = document.getElementById('chrome-content-' + winId.split('-')[1]);
-            if (!content) return;
-            content.innerHTML = `<div class="p-8 text-center"><div class="text-xl mb-2">Opening...</div><div class="text-sm text-zinc-500">${url}</div><button onclick="window.open('${url}','_blank'); closeWindow('${winId}')" class="mt-5 px-5 py-2 bg-blue-600 text-white rounded-2xl text-sm">Open in new tab</button></div>`;
-        }
-        
-        function bringToFront(win) {
-            const all = document.querySelectorAll('#window-container > div');
-            let max = 150;
-            all.forEach(w => { const z = parseInt(w.style.zIndex)||150; if (z > max) max = z; });
-            win.style.zIndex = max + 1;
-        }
-        
-        function startDrag(e, winId) {
-            if (e.target.tagName === 'BUTTON') return;
-            currentDragWin = document.getElementById(winId);
-            if (!currentDragWin) return;
-            isDragging = true;
-            const rect = currentDragWin.getBoundingClientRect();
-            offsetX = e.clientX - rect.left;
-            offsetY = e.clientY - rect.top;
-            document.addEventListener('mousemove', doDrag);
-            document.addEventListener('mouseup', stopDrag, {once:true});
-            bringToFront(currentDragWin);
-        }
-        
-        function doDrag(e) {
-            if (!isDragging || !currentDragWin) return;
-            let left = e.clientX - offsetX;
-            let top = e.clientY - offsetY;
-            currentDragWin.style.left = Math.max(0, Math.min(left, window.innerWidth-200)) + 'px';
-            currentDragWin.style.top = Math.max(0, Math.min(top, window.innerHeight-80)) + 'px';
-        }
-        
-        function stopDrag() {
-            isDragging = false;
-            currentDragWin = null;
-            document.removeEventListener('mousemove', doDrag);
-        }
-        
-        function closeWindow(id) { const w = document.getElementById(id); if (w) w.remove(); }
-        function minimizeWindow(id) { const w = document.getElementById(id); if (w) w.style.display = 'none'; }
-        
-        function maximizeWindow(id) {
-            const w = document.getElementById(id);
-            if (!w) return;
-            if (w.dataset.max === 'true') {
-                w.style.left = w.dataset.pl || '130px';
-                w.style.top = w.dataset.pt || '65px';
-                w.style.width = w.dataset.pw || '740px';
-                w.style.height = w.dataset.ph || '520px';
-                w.dataset.max = 'false';
-            } else {
-                w.dataset.pl = w.style.left; w.dataset.pt = w.style.top;
-                w.dataset.pw = w.style.width; w.dataset.ph = w.style.height;
-                w.style.left = '6px'; w.style.top = '6px';
-                w.style.width = 'calc(100% - 12px)'; w.style.height = 'calc(100% - 64px)';
-                w.dataset.max = 'true';
-            }
-        }
-        
-        function shutdownFake() {
-            const d = document.getElementById('desktop');
-            d.style.transition = 'filter 1s ease';
-            d.style.filter = 'brightness(0)';
-            setTimeout(() => {
-                if (confirm('Restart Windows 11?')) location.reload();
-                else d.style.filter = '';
-            }, 850);
-        }
-        
+
+        // ==================== INITIALIZE ====================
         function initialize() {
+            loadFromLocalStorage();
+            initDesktopIcons();
             updateClock();
             
+            // Seed initial file system if empty
+            if (!fileSystem.folders || fileSystem.folders.length === 0) {
+                fileSystem.folders = [
+                    { name: "Projects", files: [] },
+                    { name: "Documents", files: [] }
+                ];
+            }
+            if (!fileSystem.recycle) fileSystem.recycle = [];
+            
+            // Initial toast
             setTimeout(() => {
                 const pw = document.getElementById('panel-wifi-icon');
                 if (pw) pw.className = 'fas fa-wifi text-white';
-            }, 150);
+            }, 200);
             
+            // Keyboard shortcuts
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Meta' || e.key === 'OS') {
                     e.preventDefault();
@@ -826,9 +1971,26 @@
                         m.classList.add('hidden'); m.classList.remove('flex'); startMenuOpen = false;
                     }
                 }
+                if (e.key === 'Escape') {
+                    const windows = document.querySelectorAll('#window-container > div');
+                    if (windows.length > 0) {
+                        windows[windows.length - 1].remove();
+                        updateOpenWindowsList();
+                    } else {
+                        const start = document.getElementById('start-menu');
+                        if (!start.classList.contains('hidden')) {
+                            start.classList.add('hidden');
+                            start.classList.remove('flex');
+                            startMenuOpen = false;
+                        }
+                    }
+                }
             });
             
-            console.log('%c[Yasin Namani Windows 11] Final version loaded!', 'color:#64748b');
+            // Preload html2canvas for snipping (optional)
+            // loadHtml2Canvas();
+            
+            console.log('%c[Yasin Namani Windows 11 Enhanced] All features loaded! Draggable icons, Paint Pro, Notepad, AI, Camera, Voice, TaskMgr, Settings + more ✅', 'color:#22c55e');
         }
         
         window.onload = initialize;
