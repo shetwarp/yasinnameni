@@ -412,31 +412,13 @@
             const COLS = 5;
             const COL_WIDTH = 92;
             const ROW_HEIGHT = 100;
-            
-            // Always ensure new icons (AI, Minecraft) exist even if old localStorage data is present
-            const existingIds = new Set(desktopIcons.map(i => i.id));
-            DEFAULT_ICONS.forEach(def => {
-                if (!existingIds.has(def.id)) {
-                    const newIcon = {
-                        ...def,
-                        x: 12 + (desktopIcons.length % COLS) * COL_WIDTH,
-                        y: 12 + Math.floor(desktopIcons.length / COLS) * ROW_HEIGHT
-                    };
-                    desktopIcons.push(newIcon);
-                }
-            });
 
-            if (desktopIcons.length > existingIds.size) {
-                saveToLocalStorage(); // persist newly added icons
-            }
-
-            if (desktopIcons.length === 0) {
-                desktopIcons = DEFAULT_ICONS.map((icon, i) => ({
-                    ...icon,
-                    x: 12 + (i % COLS) * COL_WIDTH,
-                    y: 12 + Math.floor(i / COLS) * ROW_HEIGHT
-                }));
-            }
+            // Always reset to a clean, perfect 5-column grid (prevents random positions & broken layouts)
+            desktopIcons = DEFAULT_ICONS.map((icon, i) => ({
+                ...icon,
+                x: 12 + (i % COLS) * COL_WIDTH,
+                y: 12 + Math.floor(i / COLS) * ROW_HEIGHT
+            }));
             
             desktopIcons.forEach((icon) => {
                 const el = document.createElement('div');
@@ -925,8 +907,15 @@
         }
         
         function createNewFolderInExplorer(winId) {
-            const name = prompt('Folder name:', 'New Folder');
+            // Limit to maximum 1 folder only
+            if (fileSystem.folders && fileSystem.folders.length >= 1) {
+                alert('فقط یک فولدر می‌تونی بسازی!');
+                return;
+            }
+
+            const name = prompt('نام فولدر:', 'New Folder');
             if (!name) return;
+
             if (!fileSystem.folders) fileSystem.folders = [];
             fileSystem.folders.push({ name: name, files: [] });
             saveToLocalStorage();
