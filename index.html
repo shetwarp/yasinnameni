@@ -273,7 +273,7 @@
             
             <div class="mb-2">
                 <div class="text-xs font-medium text-zinc-400 px-1 mb-2">My Projects</div>
-                <div class="grid grid-cols-4 gap-2 text-xs">
+                <div class="grid grid-cols-3 gap-2 text-xs">
                     <div onclick="openProjectFromStart('yasin', 'https://yasin-namani.github.io/yasin-namani.com/')" class="flex flex-col items-center p-2 hover:bg-white/10 rounded-2xl cursor-pointer">
                         <i class="fas fa-user text-xl text-violet-400 mb-1"></i>
                         <span class="text-center">یاسین نامنی</span>
@@ -285,10 +285,6 @@
                     <div onclick="openProjectFromStart('counter', 'https://shetwarp.github.io/Shetline/')" class="flex flex-col items-center p-2 hover:bg-white/10 rounded-2xl cursor-pointer">
                         <i class="fas fa-crosshairs text-xl text-red-400 mb-1"></i>
                         <span class="text-center">کانتر استرایک</span>
-                    </div>
-                    <div onclick="openProjectFromStart('shetcoin', 'https://shetwarp.github.io/shetcoin/')" class="flex flex-col items-center p-2 hover:bg-white/10 rounded-2xl cursor-pointer">
-                        <i class="fas fa-coins text-xl text-yellow-400 mb-1"></i>
-                        <span class="text-center">Shetcoin</span>
                     </div>
                 </div>
             </div>
@@ -517,6 +513,8 @@
             { id: 'ai', label: 'AI', icon: 'fa-robot', color: 'from-violet-500 to-fuchsia-500', type: 'project', url: 'https://shetwarp.github.io/shetwarpbot/' },
             { id: 'chatwarp', label: 'چت وارپ', icon: 'fa-comments', color: 'from-sky-400 to-blue-500', type: 'project', url: 'https://shetwarp.github.io/chatwarp/' },
             { id: 'shetcoin', label: 'Shetcoin', icon: 'fa-coins', color: 'from-yellow-400 to-amber-500', type: 'project', url: PROJECTS.shetcoin },
+            { id: 'photos', label: 'Photos', icon: 'fa-images', color: 'from-pink-400 to-rose-500', type: 'app', app: 'photos' },
+            { id: 'store', label: 'Store', icon: 'fa-store', color: 'from-blue-500 to-indigo-600', type: 'app', app: 'store' },
             { id: 'taskmgr', label: 'Task Manager', icon: 'fa-tasks', color: 'from-blue-400 to-indigo-500', type: 'app', app: 'taskmgr' }
         ];
 
@@ -661,6 +659,8 @@
             else if (type === 'settings') { w = 420; h = 520; }
             else if (type === 'camera') { w = mobile ? 360 : 640; h = mobile ? 420 : 520; }
             else if (type === 'notes') { w = 380; h = 480; }
+            else if (type === 'photos') { w = mobile ? 380 : 720; h = mobile ? 480 : 560; }
+            else if (type === 'store') { w = mobile ? 380 : 680; h = mobile ? 480 : 560; }
             else if (type === 'taskmgr') { w = 520; h = 420; }
             else if (type === 'explorer') { w = mobile ? 360 : 720; h = mobile ? 440 : 520; }
             
@@ -894,6 +894,57 @@
                         </div>
                         <div id="notes-list-${windowCounter}" class="flex-1 overflow-auto space-y-2 text-sm">
                             <!-- Populated by JS -->
+                        </div>
+                    </div>
+                `;
+            }
+            else if (type === 'photos') {
+                title = 'Photos';
+                iconHTML = '<i class="fas fa-images text-pink-500"></i>';
+                contentHTML = `
+                    <div class="p-4 h-full flex flex-col">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="font-semibold">My Photos</span>
+                            <button onclick="alert('Photos from Camera are saved here! Take a photo with Camera app.')" class="px-3 py-1 bg-pink-500 text-white rounded-2xl text-xs">How it works</button>
+                        </div>
+                        <div class="flex-1 overflow-auto grid grid-cols-3 gap-3 p-2 bg-zinc-50 rounded-2xl">
+                            <div class="aspect-square bg-zinc-200 rounded-2xl flex items-center justify-center text-zinc-400 text-xs">Photo 1</div>
+                            <div class="aspect-square bg-zinc-200 rounded-2xl flex items-center justify-center text-zinc-400 text-xs">Photo 2</div>
+                            <div class="aspect-square bg-zinc-200 rounded-2xl flex items-center justify-center text-zinc-400 text-xs">Photo 3</div>
+                        </div>
+                        <div class="text-xs text-center text-zinc-400 mt-2">Take photos with Camera app to see them here</div>
+                    </div>
+                `;
+            }
+            else if (type === 'store') {
+                title = 'Microsoft Store';
+                iconHTML = '<i class="fas fa-store text-blue-500"></i>';
+                contentHTML = `
+                    <div class="p-4 h-full flex flex-col">
+                        <div class="mb-3">
+                            <span class="font-semibold">Featured Projects by Yasin Namani</span>
+                        </div>
+                        <div class="flex-1 overflow-auto grid grid-cols-2 gap-3">
+                            <div onclick="openProject('shetcoin', 'https://shetwarp.github.io/shetcoin/')" class="p-3 bg-white border rounded-2xl cursor-pointer hover:shadow">
+                                <div class="font-medium">Shetcoin</div>
+                                <div class="text-xs text-zinc-500">Crypto project</div>
+                                <button class="mt-2 text-xs px-3 py-1 bg-blue-600 text-white rounded-xl">Open</button>
+                            </div>
+                            <div onclick="openProject('fifa2d', 'https://shetwarp.github.io/fifa2d/')" class="p-3 bg-white border rounded-2xl cursor-pointer hover:shadow">
+                                <div class="font-medium">FIFA 2D</div>
+                                <div class="text-xs text-zinc-500">Game</div>
+                                <button class="mt-2 text-xs px-3 py-1 bg-blue-600 text-white rounded-xl">Open</button>
+                            </div>
+                            <div onclick="openProject('counter', 'https://shetwarp.github.io/Shetline/')" class="p-3 bg-white border rounded-2xl cursor-pointer hover:shadow">
+                                <div class="font-medium">Counter Strike</div>
+                                <div class="text-xs text-zinc-500">Game</div>
+                                <button class="mt-2 text-xs px-3 py-1 bg-blue-600 text-white rounded-xl">Open</button>
+                            </div>
+                            <div onclick="openProject('ai', 'https://shetwarp.github.io/shetwarpbot/')" class="p-3 bg-white border rounded-2xl cursor-pointer hover:shadow">
+                                <div class="font-medium">AI Chat</div>
+                                <div class="text-xs text-zinc-500">Artificial Intelligence</div>
+                                <button class="mt-2 text-xs px-3 py-1 bg-blue-600 text-white rounded-xl">Open</button>
+                            </div>
                         </div>
                     </div>
                 `;
