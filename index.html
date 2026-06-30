@@ -333,6 +333,73 @@
         let notesList = [];
         let paintHistory = [];
         let currentPaintTool = 'pencil';
+        let audioContext = null;
+
+        // ==================== SOUND SYSTEM (Web Audio API) ====================
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(type) {
+            if (!audioContext) initAudio();
+            if (!audioContext) return;
+
+            const oscillator = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            const filter = audioContext.createBiquadFilter();
+
+            oscillator.type = 'sine';
+            gain.gain.value = 0.15;
+
+            switch (type) {
+                case 'click':
+                    oscillator.frequency.value = 1200;
+                    gain.gain.value = 0.08;
+                    oscillator.type = 'triangle';
+                    setTimeout(() => { gain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.08); }, 10);
+                    break;
+
+                case 'open':
+                    oscillator.frequency.value = 650;
+                    gain.gain.value = 0.12;
+                    setTimeout(() => {
+                        oscillator.frequency.linearRampToValueAtTime(850, audioContext.currentTime + 0.15);
+                    }, 20);
+                    setTimeout(() => { gain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.25); }, 30);
+                    break;
+
+                case 'close':
+                    oscillator.frequency.value = 900;
+                    gain.gain.value = 0.1;
+                    setTimeout(() => {
+                        oscillator.frequency.linearRampToValueAtTime(400, audioContext.currentTime + 0.2);
+                    }, 10);
+                    setTimeout(() => { gain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.22); }, 20);
+                    break;
+
+                case 'start':
+                    oscillator.frequency.value = 500;
+                    gain.gain.value = 0.1;
+                    setTimeout(() => { oscillator.frequency.value = 750; }, 60);
+                    setTimeout(() => { gain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.18); }, 30);
+                    break;
+
+                default:
+                    oscillator.frequency.value = 800;
+                    gain.gain.value = 0.1;
+            }
+
+            oscillator.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioContext.destination);
+            oscillator.start();
+
+            setTimeout(() => {
+                oscillator.stop();
+            }, 400);
+        }
         
         const PROJECTS = {
             yasin: "https://yasin-namani.github.io/yasin-namani.com/",
@@ -446,6 +513,7 @@
                 
                 // Click handler only (no dragging)
                 el.addEventListener('click', (e) => {
+                    playSound('click');
                     if (icon.type === 'project') {
                         openProject(icon.id, icon.url);
                     } else {
@@ -483,6 +551,7 @@
         function closeWindow(id) { 
             const w = document.getElementById(id); 
             if (w) {
+                playSound('close');
                 w.remove(); 
                 updateOpenWindowsList();
             }
@@ -490,7 +559,10 @@
         
         function minimizeWindow(id) { 
             const w = document.getElementById(id); 
-            if (w) w.style.display = 'none'; 
+            if (w) {
+                playSound('click');
+                w.style.display = 'none'; 
+            }
         }
         
         function maximizeWindow(id) {
@@ -733,10 +805,13 @@
                                 </div>
                                 <div>
                                     <label class="text-xs text-zinc-500">Wallpaper</label>
-                                    <div class="flex gap-2 mt-1">
-                                        <button onclick="changeWallpaper(0)" class="px-3 py-1 text-xs bg-gradient-to-r from-slate-900 to-blue-900 text-white rounded-xl">Default</button>
-                                        <button onclick="changeWallpaper(1)" class="px-3 py-1 text-xs bg-gradient-to-r from-violet-900 to-fuchsia-900 text-white rounded-xl">Purple</button>
-                                        <button onclick="changeWallpaper(2)" class="px-3 py-1 text-xs bg-gradient-to-r from-emerald-900 to-teal-900 text-white rounded-xl">Green</button>
+                                    <div class="grid grid-cols-3 gap-2 mt-2">
+                                        <button onclick="changeWallpaper(0)" class="h-12 text-[10px] bg-gradient-to-br from-slate-900 to-blue-900 text-white rounded-2xl flex items-center justify-center shadow">Default</button>
+                                        <button onclick="changeWallpaper(1)" class="h-12 text-[10px] bg-gradient-to-br from-violet-900 to-fuchsia-900 text-white rounded-2xl flex items-center justify-center shadow">Purple</button>
+                                        <button onclick="changeWallpaper(2)" class="h-12 text-[10px] bg-gradient-to-br from-emerald-900 to-teal-900 text-white rounded-2xl flex items-center justify-center shadow">Green</button>
+                                        <button onclick="changeWallpaper(3)" class="h-12 text-[10px] bg-gradient-to-br from-slate-700 to-zinc-900 text-white rounded-2xl flex items-center justify-center shadow">Dark</button>
+                                        <button onclick="changeWallpaper(4)" class="h-12 text-[10px] bg-gradient-to-br from-violet-600 to-pink-600 text-white rounded-2xl flex items-center justify-center shadow">Vibrant</button>
+                                        <button onclick="changeWallpaper(5)" class="h-12 text-[10px] bg-gradient-to-br from-blue-900 to-indigo-900 text-white rounded-2xl flex items-center justify-center shadow">Clean Blue</button>
                                     </div>
                                 </div>
                             </div>
@@ -823,6 +898,7 @@
             
             container.appendChild(win);
             win.addEventListener('mousedown', () => bringToFront(win));
+            playSound('open');
             setTimeout(() => bringToFront(win), 10);
             
             // Post-open initializations
@@ -1566,6 +1642,24 @@
         // ==================== SETTINGS ====================
         function changeAccentColor(color) {
             document.documentElement.style.setProperty('--accent', color);
+            
+            // Apply accent to more elements dynamically
+            const style = document.createElement('style');
+            style.id = 'dynamic-accent';
+            style.innerHTML = `
+                .taskbar button:hover, 
+                .win11-btn:hover,
+                .file-item:hover { 
+                    background-color: ${color}22 !important; 
+                }
+                .title-bar { 
+                    border-bottom: 1px solid ${color}33; 
+                }
+            `;
+            const old = document.getElementById('dynamic-accent');
+            if (old) old.remove();
+            document.head.appendChild(style);
+            
             saveToLocalStorage();
         }
         
@@ -1577,13 +1671,17 @@
         
         function changeWallpaper(type) {
             const desk = document.getElementById('desktop');
-            if (type === 0) {
-                desk.style.background = 'linear-gradient(145deg, #0f172a 0%, #1e3a8a 35%, #312e81 65%, #1e40af 100%)';
-            } else if (type === 1) {
-                desk.style.background = 'linear-gradient(145deg, #4c1d95 0%, #6b21a8 100%)';
-            } else if (type === 2) {
-                desk.style.background = 'linear-gradient(145deg, #064e3b 0%, #166534 100%)';
-            }
+            
+            const wallpapers = {
+                0: 'linear-gradient(145deg, #0f172a 0%, #1e3a8a 35%, #312e81 65%, #1e40af 100%)', // Default Blue
+                1: 'linear-gradient(135deg, #1e3a8a 0%, #312e81 50%, #4c1d95 100%)', // Deep Purple
+                2: 'linear-gradient(145deg, #064e3b 0%, #166534 40%, #14532d 100%)', // Forest Green
+                3: 'linear-gradient(120deg, #1e2937 0%, #334155 100%)', // Dark Slate
+                4: 'linear-gradient(135deg, #7c3aed 0%, #c026d3 100%)', // Vibrant Purple-Pink
+                5: 'linear-gradient(145deg, #0f172a 0%, #1e40af 100%)'  // Clean Blue
+            };
+            
+            desk.style.background = wallpapers[type] || wallpapers[0];
             saveToLocalStorage();
         }
 
@@ -1797,6 +1895,7 @@
                 menu.classList.remove('flex');
                 startMenuOpen = false;
             } else {
+                playSound('start');
                 menu.classList.remove('hidden');
                 menu.classList.add('flex');
                 startMenuOpen = true;
