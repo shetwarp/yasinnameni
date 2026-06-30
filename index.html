@@ -398,8 +398,8 @@
             { id: 'settings', label: 'Settings', icon: 'fa-cog', color: 'from-slate-400 to-zinc-600', type: 'app', app: 'settings' },
             { id: 'camera', label: 'Camera', icon: 'fa-video', color: 'from-rose-400 to-pink-600', type: 'app', app: 'camera' },
             { id: 'notes', label: 'Sticky Notes', icon: 'fa-sticky-note', color: 'from-yellow-400 to-amber-500', type: 'app', app: 'notes' },
-            { id: 'minecraftweb', label: 'ماینکرافت', icon: 'fa-gamepad', color: 'from-green-500 to-cyan-500', type: 'project', url: PROJECTS.minecraftweb },
-            { id: 'ai', label: 'AI', icon: 'fa-robot', color: 'from-violet-500 to-fuchsia-500', type: 'project', url: PROJECTS.ai },
+            { id: 'minecraftweb', label: 'ماینکرافت', icon: 'fa-gamepad', color: 'from-green-500 to-cyan-500', type: 'project', url: 'https://shetwarp.github.io/minecraftweb/' },
+            { id: 'ai', label: 'AI', icon: 'fa-robot', color: 'from-violet-500 to-fuchsia-500', type: 'project', url: 'https://shetwarp.github.io/shetwarpbot/' },
             { id: 'taskmgr', label: 'Task Manager', icon: 'fa-tasks', color: 'from-blue-400 to-indigo-500', type: 'app', app: 'taskmgr' }
         ];
 
@@ -413,6 +413,23 @@
             const COL_WIDTH = 92;
             const ROW_HEIGHT = 100;
             
+            // Always ensure new icons (AI, Minecraft) exist even if old localStorage data is present
+            const existingIds = new Set(desktopIcons.map(i => i.id));
+            DEFAULT_ICONS.forEach(def => {
+                if (!existingIds.has(def.id)) {
+                    const newIcon = {
+                        ...def,
+                        x: 12 + (desktopIcons.length % COLS) * COL_WIDTH,
+                        y: 12 + Math.floor(desktopIcons.length / COLS) * ROW_HEIGHT
+                    };
+                    desktopIcons.push(newIcon);
+                }
+            });
+
+            if (desktopIcons.length > existingIds.size) {
+                saveToLocalStorage(); // persist newly added icons
+            }
+
             if (desktopIcons.length === 0) {
                 desktopIcons = DEFAULT_ICONS.map((icon, i) => ({
                     ...icon,
