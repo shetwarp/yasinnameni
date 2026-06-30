@@ -151,6 +151,11 @@
                 padding-left: 8px !important;
                 padding-right: 4px !important;
             }
+            #desktop-icons {
+                width: 260px !important;
+                left: 8px !important;
+                top: 8px !important;
+            }
         }
     </style>
 </head>
@@ -161,7 +166,7 @@
          onclick="handleDesktopClick(event)">
         
         <!-- Desktop Icons Container (will be populated by JS for drag support) -->
-        <div id="desktop-icons" class="absolute top-5 left-5 z-10" style="width: 500px; min-height: 520px;"></div>
+        <div id="desktop-icons" class="absolute top-5 left-5 z-10" style="width: min(480px, 92vw); min-height: 520px;"></div>
 
         <div id="window-container" class="absolute inset-0 z-20 pointer-events-none"></div>
     </div>
@@ -407,17 +412,22 @@
             const container = document.getElementById('desktop-icons');
             container.innerHTML = '';
             container.style.position = 'absolute';
-            container.style.width = '480px';   // 5 columns like real Windows
-            
-            const COLS = 5;
-            const COL_WIDTH = 92;
-            const ROW_HEIGHT = 100;
 
-            // Always reset to a clean, perfect 5-column grid (prevents random positions & broken layouts)
+            const isMobile = window.innerWidth < 768;
+            
+            // Responsive columns and width
+            const COLS = isMobile ? 3 : 5;
+            const COL_WIDTH = isMobile ? 85 : 92;
+            const ROW_HEIGHT = isMobile ? 95 : 100;
+            const containerWidth = isMobile ? '280px' : '480px';
+
+            container.style.width = containerWidth;
+
+            // Always reset to a clean, perfect grid
             desktopIcons = DEFAULT_ICONS.map((icon, i) => ({
                 ...icon,
-                x: 12 + (i % COLS) * COL_WIDTH,
-                y: 12 + Math.floor(i / COLS) * ROW_HEIGHT
+                x: 8 + (i % COLS) * COL_WIDTH,
+                y: 8 + Math.floor(i / COLS) * ROW_HEIGHT
             }));
             
             desktopIcons.forEach((icon) => {
